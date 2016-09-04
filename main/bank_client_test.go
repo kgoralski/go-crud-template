@@ -1,8 +1,8 @@
 package main
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 )
 
 func TestGetBanksClient(t *testing.T) {
@@ -31,9 +31,9 @@ func TestGetOneBankClient(t *testing.T) {
 func TestCreateBankClient(t *testing.T) {
 	fmt.Println("TestCreateBankClient")
 	deleteAllBanks()
-	bank := Bank{Name:"Alior"}
+	bank := Bank{Name: "Alior"}
 	id := postBank(bank)
-	cretedBank:= getOneBank(id)
+	cretedBank := getOneBank(id)
 
 	if cretedBank.Name != "Alior" {
 		t.Fail()
