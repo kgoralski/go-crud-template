@@ -13,9 +13,7 @@ func getBanksHandler(w http.ResponseWriter, r *http.Request) {
 	m := getBanks()
 	b, err := json.Marshal(m)
 
-	if err != nil {
-		panic(err)
-	}
+	checkErr(err)
 	w.Write(b)
 }
 
@@ -24,12 +22,11 @@ func getBankbyIdHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	id, err := strconv.Atoi(vars["id"])
+	checkErr(err)
 	m := getBankById(id)
 	b, err := json.Marshal(m)
 
-	if err != nil {
-		panic(err)
-	}
+	checkErr(err)
 	w.Write(b)
 }
 
@@ -37,11 +34,13 @@ func createBankHanlder(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var bank Bank
-	b, _ := ioutil.ReadAll(r.Body)
+	b, err := ioutil.ReadAll(r.Body)
+	checkErr(err)
 	json.Unmarshal(b, &bank)
 	id := createBank(bank)
 
-	j, _ := json.Marshal(id)
+	j, err := json.Marshal(id)
+	checkErr(err)
 	w.Write(j)
 }
 
@@ -50,9 +49,7 @@ func deleteBankByIdHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	id, err := strconv.Atoi(vars["id"])
-	if err != nil {
-		panic(err)
-	}
+	checkErr(err)
 	deleteBankById(id)
 }
 
@@ -60,10 +57,12 @@ func updateBankHanlder(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var bank Bank
-	b, _ := ioutil.ReadAll(r.Body)
+	b, err := ioutil.ReadAll(r.Body)
+	checkErr(err)
 	json.Unmarshal(b, &bank)
 	updatedBank := updateBank(bank)
 
-	j, _ := json.Marshal(updatedBank)
+	j, err := json.Marshal(updatedBank)
+	checkErr(err)
 	w.Write(j)
 }
