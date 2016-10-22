@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -12,30 +13,45 @@ func TestGetBanksClient(t *testing.T) {
 	createBank(Bank{Name: "MBANK"})
 	banks := getAllBanks()
 
-	if len(banks) != 2 {
-		t.Fail()
-	}
+	assert.Len(t, banks, 2, "Expected size is 2")
+
 }
 
 func TestGetOneBankClient(t *testing.T) {
 	fmt.Println("TestGetOneBankClient")
-	deleteAllBanks()
 	id := createBank(Bank{Name: "Santander"})
 	bank := getOneBank(int(id))
 
-	if bank.Name != "Santander" {
-		t.Fail()
-	}
+	assert.Equal(t, bank.Name, "Santander", "Expected that both names are equal")
 }
 
 func TestCreateBankClient(t *testing.T) {
 	fmt.Println("TestCreateBankClient")
-	deleteAllBanks()
 	bank := Bank{Name: "Alior"}
 	id := postBank(bank)
-	cretedBank := getOneBank(id)
+	createdBank := getOneBank(id)
 
-	if cretedBank.Name != "Alior" {
-		t.Fail()
+	assert.Equal(t, createdBank.Name, "Alior", "Expected that both names are equal")
+}
+
+func TestDeleteSingleBankClient(t *testing.T) {
+	fmt.Println("TestDeleteSingleBankClient")
+	id := createBank(Bank{Name: "Santander"})
+	deleteBank(id)
+	banks := getAllBanks()
+
+	for _, bank := range banks {
+		assert.NotEqual(t, bank, "Santander")
 	}
+}
+
+func TestDeleteAllBankClient(t *testing.T) {
+	fmt.Println("TestDeleteAllBankClient")
+	createBank(Bank{Name: "BZWBK"})
+	createBank(Bank{Name: "MBANK"})
+	createBank(Bank{Name: "Santander"})
+	deleteBanks()
+	banks := getAllBanks()
+
+	assert.Empty(t, banks)
 }

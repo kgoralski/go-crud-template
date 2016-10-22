@@ -2,29 +2,25 @@ package main
 
 import (
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestGetBanks(t *testing.T) {
-	fmt.Println("TestGetBanks")
 	deleteAllBanks()
+	fmt.Println("TestGetBanks")
 	createBank(Bank{Name: "BZWBK"})
 	createBank(Bank{Name: "MBANK"})
 
 	banks := getBanks()
-	if len(banks) != 2 {
-		t.Fail()
-	}
+	assert.Len(t, banks, 2, "Expected size is 2")
 }
 
 func TestCreateBank(t *testing.T) {
 	fmt.Println("TestCreateBank")
-	deleteAllBanks()
 	id := createBank(Bank{Name: "MBANK"})
 
-	if id == 0 {
-		t.Fail()
-	}
+	assert.NotZero(t, id)
 }
 
 func TestDeleteAllBanks(t *testing.T) {
@@ -33,40 +29,31 @@ func TestDeleteAllBanks(t *testing.T) {
 	createBank(Bank{Name: "MBANK"})
 	deleteAllBanks()
 	banks := getBanks()
-	if len(banks) != 0 {
-		t.Fail()
-	}
+	assert.Empty(t, banks)
 }
 
 func TestGetBankById(t *testing.T) {
 	fmt.Println("TestGetBankById")
-	deleteAllBanks()
 	id := createBank(Bank{Name: "Santander"})
 	bank := getBankById(int(id))
-	if bank.Name != "Santander" {
-		t.Fail()
-	}
+
+	assert.Equal(t, bank.Name, "Santander")
 }
 
 func TestDeleteBankById(t *testing.T) {
 	fmt.Println("TestDeleteBankById")
-	deleteAllBanks()
 	id := createBank(Bank{Name: "Santander"})
 
 	deleteBankById(int(id))
 	banks := getBanks()
-	if len(banks) != 0 {
-		t.Fail()
-	}
+
+	assert.NotZero(t, banks)
 }
 
 func TestUpdateBank(t *testing.T) {
 	fmt.Println("TestUpdateBank")
-	deleteAllBanks()
 	id := createBank(Bank{Name: "MBANK"})
-
 	bank := updateBank(Bank{Id: int(id), Name: "Santander"})
-	if bank.Name != "Santander" {
-		t.Fail()
-	}
+
+	assert.Equal(t, bank.Name, "Santander")
 }

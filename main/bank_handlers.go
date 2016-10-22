@@ -66,3 +66,9 @@ func updateBankHanlder(w http.ResponseWriter, r *http.Request) {
 	checkErr(err)
 	w.Write(j)
 }
+
+func deleteAllBanksHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	deleteAllBanks()
+}

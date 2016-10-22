@@ -43,3 +43,18 @@ func postBank(bank Bank) int {
 
 	return id
 }
+
+func deleteBank(id int) {
+	idStr := strconv.Itoa(id)
+	req, err := http.NewRequest(http.MethodDelete, "http://localhost:8080/rest/banks/"+idStr, nil)
+	resp, err := http.DefaultClient.Do(req)
+	checkErr(err)
+	defer resp.Body.Close()
+}
+
+func deleteBanks() {
+	req, err := http.NewRequest(http.MethodDelete, "http://localhost:8080/rest/banks/all", nil)
+	resp, err := http.DefaultClient.Do(req)
+	checkErr(err)
+	defer resp.Body.Close()
+}
