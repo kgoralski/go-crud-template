@@ -3,7 +3,7 @@ go-crud-template
  - go 1.7,
  - gorilla mux for Routing,
  - sqlx for database access,
- - tests with testify library
+ - tests using testify library
 
 urls:
  - GET http://localhost:8080/rest/banks/
