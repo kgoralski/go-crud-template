@@ -12,3 +12,6 @@ urls:
  - PUT http://localhost:8080/rest/banks/1 { "id": 1, name": "BankName" }
  - DELETE http://localhost:8080/rest/banks/1
 
+Docker:
+ - Build  $docker build -t golang:go-app .
+ - With mysqldb on host $docker run --name go-crud-app --network=host -it -d -p 8080:8080 golang:go-app

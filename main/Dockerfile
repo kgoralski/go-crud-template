@@ -1,0 +1,16 @@
+FROM golang:latest
+
+ADD . /go/src/github.com/kgoralski/go-crud-template/main
+WORKDIR /go/src/github.com/kgoralski/go-crud-template/main
+
+RUN go get github.com/go-sql-driver/mysql
+RUN go get github.com/jmoiron/sqlx
+RUN go get github.com/gorilla/mux
+RUN go install github.com/kgoralski/go-crud-template/main
+
+RUN ["apt-get", "update"]
+RUN ["apt-get", "install", "-y", "vim"]
+
+ENTRYPOINT /go/bin/main
+
+EXPOSE 8080
