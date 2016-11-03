@@ -11,6 +11,7 @@ urls:
  - POST http://localhost:8080/rest/banks/ { "name": "BankName" }
  - PUT http://localhost:8080/rest/banks/1 { "id": 1, name": "BankName" }
  - DELETE http://localhost:8080/rest/banks/1
+ - DELETE http://localhost:8080/rest/banks/
 
 Docker version 1.12.3:
  - Build  $docker build -t golang:go-app .

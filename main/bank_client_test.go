@@ -49,7 +49,7 @@ func TestDeleteAllBankClient(t *testing.T) {
 	fmt.Println("TestDeleteAllBankClient")
 	createBank(Bank{Name: "BZWBK"})
 	createBank(Bank{Name: "MBANK"})
-	createBank(Bank{Name: "Santander"})
+	createBank(Bank{Name: "ING"})
 	deleteBanks()
 	banks := getAllBanks()
 

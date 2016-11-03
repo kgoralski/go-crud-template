@@ -42,7 +42,7 @@ func TestGetBankById(t *testing.T) {
 
 func TestDeleteBankById(t *testing.T) {
 	fmt.Println("TestDeleteBankById")
-	id := createBank(Bank{Name: "Santander"})
+	id := createBank(Bank{Name: "MBANK"})
 
 	deleteBankById(int(id))
 	banks := getBanks()
@@ -53,7 +53,7 @@ func TestDeleteBankById(t *testing.T) {
 func TestUpdateBank(t *testing.T) {
 	fmt.Println("TestUpdateBank")
 	id := createBank(Bank{Name: "MBANK"})
-	bank := updateBank(Bank{Id: int(id), Name: "Santander"})
+	bank := updateBank(Bank{Id: int(id), Name: "BZWBK"})
 
-	assert.Equal(t, bank.Name, "Santander")
+	assert.Equal(t, bank.Name, "BZWBK")
 }

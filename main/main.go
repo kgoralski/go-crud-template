@@ -17,6 +17,6 @@ func startServer() {
 	r.HandleFunc("/rest/banks/", createBankHanlder).Methods("POST")
 	r.HandleFunc("/rest/banks/{id:[0-9]+}", deleteBankByIdHandler).Methods("DELETE")
 	r.HandleFunc("/rest/banks/{id:[0-9]+}", updateBankHanlder).Methods("PUT")
-	r.HandleFunc("/rest/banks/all", deleteAllBanksHandler).Methods("DELETE")
+	r.HandleFunc("/rest/banks/", deleteAllBanksHandler).Methods("DELETE")
 	log.Fatal(http.ListenAndServe(":8080", r))
 }

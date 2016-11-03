@@ -53,7 +53,7 @@ func deleteBank(id int) {
 }
 
 func deleteBanks() {
-	req, err := http.NewRequest(http.MethodDelete, "http://localhost:8080/rest/banks/all", nil)
+	req, err := http.NewRequest(http.MethodDelete, "http://localhost:8080/rest/banks/", nil)
 	resp, err := http.DefaultClient.Do(req)
 	checkErr(err)
 	defer resp.Body.Close()
