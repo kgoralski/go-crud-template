@@ -15,6 +15,7 @@ urls:
 Docker version 1.12.3:
  - Build  $docker build -t golang:go-app .
  - With mysqldb on host $docker run --name go-crud --network=host -it -d -p 8080:8080 golang:go-app
+ - Should also work with mysql inside docker $docker run -d -p 3306:3306 --name mysql-db -e MYSQL_ROOT_PASSWORD=admin -d mysql:5.7
  
 Hints:
  - My $GOPATH=$HOME/work
