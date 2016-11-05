@@ -12,6 +12,7 @@ type Bank struct {
 
 var sqlConnection string = "admin:Admin.123@tcp(localhost:3306)/bank_db?charset=utf8"
 
+// This is wrong on so many levels - don't panic, ever!
 func checkErr(err error) {
 	if err != nil {
 		panic(err)
@@ -22,6 +23,7 @@ func getBanks() []Bank {
 	db := sqlx.MustConnect("mysql", sqlConnection)
 	var banks = []Bank{}
 	err := db.Select(&banks, "SELECT * FROM banks")
+	// handle errors, return ([]Bank, error) in this function
 	checkErr(err)
 	return banks
 }
