@@ -2,15 +2,19 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/gorilla/mux"
 	"io/ioutil"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 func getBanksHandler(w http.ResponseWriter, r *http.Request) {
+	// You can set wrap your handler in another handler - functions are types in go (function can implement interface)
 	w.Header().Set("Content-Type", "application/json")
 	m := getBanks()
+
+	// instead: json.NewEncoder(w).Encode(m)
 	b, err := json.Marshal(m)
 
 	checkErr(err)
