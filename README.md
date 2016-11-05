@@ -1,3 +1,6 @@
+This code is written with very little experience with Golang. 
+Hope that I will improve it soon :)
+
 go-crud-template
 
  - go 1.7,
