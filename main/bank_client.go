@@ -44,7 +44,7 @@ func postBank(bank Bank) (int, error) {
 	var id int
 	json.NewDecoder(r.Body).Decode(&id)
 
-	return int(id), nil
+	return id, nil
 }
 
 func deleteBank(id int) error {
