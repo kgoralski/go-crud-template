@@ -1,59 +1,61 @@
 package main
 
 import (
-	"fmt"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetBanks(t *testing.T) {
 	deleteAllBanks()
-	fmt.Println("TestGetBanks")
-	createBank(Bank{Name: "BZWBK"})
-	createBank(Bank{Name: "MBANK"})
+	createBank(Bank{Name: BZWBK})
+	createBank(Bank{Name: MBANK})
 
-	banks := getBanks()
+	banks, err := getBanks()
+	checkHttpErr(err)
 	assert.Len(t, banks, 2, "Expected size is 2")
 }
 
 func TestCreateBank(t *testing.T) {
-	fmt.Println("TestCreateBank")
-	id := createBank(Bank{Name: "MBANK"})
-
+	id, err := createBank(Bank{Name: MBANK})
+	checkHttpErr(err)
 	assert.NotZero(t, id)
 }
 
 func TestDeleteAllBanks(t *testing.T) {
-	fmt.Println("TestDeleteAllBanks")
-	createBank(Bank{Name: "BZWBK"})
-	createBank(Bank{Name: "MBANK"})
+	createBank(Bank{Name: BZWBK})
+	createBank(Bank{Name: MBANK})
 	deleteAllBanks()
-	banks := getBanks()
+	banks, err := getBanks()
+	checkHttpErr(err)
 	assert.Empty(t, banks)
 }
 
 func TestGetBankById(t *testing.T) {
-	fmt.Println("TestGetBankById")
-	id := createBank(Bank{Name: "Santander"})
-	bank := getBankById(int(id))
+	id, err := createBank(Bank{Name: SANTANDER})
+	checkHttpErr(err)
+	bank, errQuery := getBankById(int(id))
+	checkHttpErr(errQuery)
 
-	assert.Equal(t, bank.Name, "Santander")
+	assert.Equal(t, SANTANDER, bank.Name)
 }
 
 func TestDeleteBankById(t *testing.T) {
-	fmt.Println("TestDeleteBankById")
-	id := createBank(Bank{Name: "MBANK"})
+	id, err := createBank(Bank{Name: MBANK})
+	checkHttpErr(err)
 
 	deleteBankById(int(id))
-	banks := getBanks()
+	banks, errQuery := getBanks()
+	checkHttpErr(errQuery)
 
 	assert.NotZero(t, banks)
 }
 
 func TestUpdateBank(t *testing.T) {
-	fmt.Println("TestUpdateBank")
-	id := createBank(Bank{Name: "MBANK"})
-	bank := updateBank(Bank{Id: int(id), Name: "BZWBK"})
+	id, err := createBank(Bank{Name: MBANK})
+	checkHttpErr(err)
+	bank, errQuery := updateBank(Bank{Id: int(id), Name: BZWBK})
+	checkHttpErr(errQuery)
 
-	assert.Equal(t, bank.Name, "BZWBK")
+	assert.Equal(t, BZWBK, bank.Name)
 }

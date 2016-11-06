@@ -3,78 +3,72 @@ package main
 import (
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
+	"fmt"
 	"net/http"
-	"strconv"
 )
 
-func getAllBanks() []Bank {
-	// base url could be a const
-	resp, err := http.Get("http://localhost:8080/rest/banks/")
+const BASE_URL string = "http://localhost:8080/rest/banks/"
 
-	// https://go-proverbs.github.io:
-	// - Don't panic.
-	// Don't just check errors, handle them gracefully.
-	// This (and all other methods) should return errors (or handle them instead of panic())
-	checkErr(err)
+func getAllBanks() ([]Bank, error) {
+	resp, err := http.Get(BASE_URL)
+	if err != nil {
+		return nil, err
+	}
 	var banks []Bank
-	// There's no need to use ioutil.ReadAll()
-	// Instead you an do: err := json.NewDecoder(resp.Body).Decode(&banks)
-	b, err := ioutil.ReadAll(resp.Body)
-	checkErr(err)
-	// json.Unmarshal also returns error
-	json.Unmarshal(b, &banks)
-	// This is only good here because panic() will be called on error - otherwise - null pointer dereference
+	json.NewDecoder(resp.Body).Decode(&banks)
 	defer resp.Body.Close()
-	return banks
+	return banks, nil
 }
 
-func getOneBank(id int) Bank {
-	idStr := strconv.Itoa(id)
-	// fmt.Sprintf("http://localhost:8080/rest/banks/%s", id)
-	resp, err := http.Get("http://localhost:8080/rest/banks/" + idStr)
-
-	// As aboce
-	checkErr(err)
+func getOneBank(id int) (*Bank, error) {
+	resp, err := http.Get(fmt.Sprintf(BASE_URL+"%d", id))
+	if err != nil {
+		return nil, err
+	}
 	var bank Bank
-	b, err := ioutil.ReadAll(resp.Body)
-	checkErr(err)
-	json.Unmarshal(b, &bank)
+	json.NewDecoder(resp.Body).Decode(&bank)
 	defer resp.Body.Close()
-	return bank
+	return &bank, nil
 }
 
-func postBank(bank Bank) int {
-	// Handle errors :)
-	buf, _ := json.Marshal(bank)
-	// Instead:
-	// var buf bytes.Buffer
-	// err := json.NewEncoder(buf).Encode(bank)
-	body := bytes.NewBuffer(buf)
-	r, err := http.Post("http://localhost:8080/rest/banks/", "text/plain", body)
-	checkErr(err)
-	response, err := ioutil.ReadAll(r.Body)
-	checkErr(err)
+func postBank(bank Bank) (int, error) {
+	buf := new(bytes.Buffer)
+	err := json.NewEncoder(buf).Encode(bank)
+	if err != nil {
+		return -1, err
+	}
+	r, err := http.Post(BASE_URL, "text/plain", buf)
+	if err != nil {
+		return -1, err
+	}
 	var id int
-	json.Unmarshal(response, &id)
+	json.NewDecoder(r.Body).Decode(&id)
 
-	return id
+	return int(id), nil
 }
 
-func deleteBank(id int) {
-	// fmt.Sprintf
-	idStr := strconv.Itoa(id)
-	req, err := http.NewRequest(http.MethodDelete, "http://localhost:8080/rest/banks/"+idStr, nil)
-	// handle errors
+func deleteBank(id int) error {
+	req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf(BASE_URL+"%d", id), nil)
+	if err != nil {
+		return err
+	}
 	resp, err := http.DefaultClient.Do(req)
-	checkErr(err)
+	if err != nil {
+		return err
+	}
 	defer resp.Body.Close()
+	return nil
 }
 
-func deleteBanks() {
-	req, err := http.NewRequest(http.MethodDelete, "http://localhost:8080/rest/banks/", nil)
-	// handle errors
+func deleteBanks() error {
+	req, err := http.NewRequest(http.MethodDelete, BASE_URL, nil)
+	if err != nil {
+		return err
+	}
 	resp, err := http.DefaultClient.Do(req)
-	checkErr(err)
+	if err != nil {
+		return err
+	}
 	defer resp.Body.Close()
+	return nil
 }
