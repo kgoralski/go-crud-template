@@ -19,7 +19,7 @@ const (
 	sqlConnection    = "admin:Admin.123@tcp(localhost:3306)/bank_db?charset=utf8"
 )
 
-func getBanks() ([]Bank, *httpError) {
+func getBanks() ([]Bank, error) {
 	db := sqlx.MustConnect("mysql", sqlConnection)
 	var banks = []Bank{}
 	err := db.Select(&banks, "SELECT * FROM banks")
@@ -29,7 +29,7 @@ func getBanks() ([]Bank, *httpError) {
 	return banks, nil
 }
 
-func getBankById(id int) (*Bank, *httpError) {
+func getBankById(id int) (*Bank, error) {
 	db := sqlx.MustConnect("mysql", sqlConnection)
 	var bank = Bank{}
 	err := db.Get(&bank, "SELECT * FROM banks WHERE id=?", id)
@@ -39,7 +39,7 @@ func getBankById(id int) (*Bank, *httpError) {
 	return &bank, nil
 }
 
-func createBank(bank Bank) (int, *httpError) {
+func createBank(bank Bank) (int, error) {
 	db := sqlx.MustConnect("mysql", sqlConnection)
 	result, err := db.Exec("INSERT into banks (name) VALUES (?)", bank.Name)
 	if err != nil {
@@ -52,7 +52,7 @@ func createBank(bank Bank) (int, *httpError) {
 	return int(lastId), nil
 }
 
-func deleteAllBanks() *httpError {
+func deleteAllBanks() error {
 	db := sqlx.MustConnect("mysql", sqlConnection)
 	_, err := db.Exec("TRUNCATE table banks")
 	if err != nil {
@@ -61,7 +61,7 @@ func deleteAllBanks() *httpError {
 	return nil
 }
 
-func deleteBankById(id int) *httpError {
+func deleteBankById(id int) error {
 	db := sqlx.MustConnect("mysql", sqlConnection)
 	res, err := db.Exec("DELETE from banks where id=?", id)
 	if err != nil {
@@ -77,7 +77,7 @@ func deleteBankById(id int) *httpError {
 	return nil
 }
 
-func updateBank(bank Bank) (*Bank, *httpError) {
+func updateBank(bank Bank) (*Bank, error) {
 	db := sqlx.MustConnect("mysql", sqlConnection)
 	res, err := db.Exec("UPDATE banks SET name=? WHERE id=?", bank.Name, bank.Id)
 	if err != nil {
