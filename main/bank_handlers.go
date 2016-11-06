@@ -9,12 +9,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type HttpError struct {
-	Error   error
-	Message string
-	Code    int
-}
-
 const (
 	Content_Type     = "Content-Type"
 	APPLICATION_JSON = "application/json"
@@ -30,7 +24,7 @@ func commonHeaders(fn http.HandlerFunc) http.HandlerFunc {
 func getBanksHandler(w http.ResponseWriter, r *http.Request) {
 	banks, err := getBanks()
 	if err != nil {
-		log.Print(err.Error)
+		log.Print(err.Err)
 		http.Error(w, err.Message, err.Code)
 		return
 	}
@@ -47,7 +41,7 @@ func getBankbyIdHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	b, err := getBankById(id)
 	if err != nil {
-		log.Print(err.Error)
+		log.Print(err.Err)
 		http.Error(w, err.Message, err.Code)
 		return
 	}
@@ -59,7 +53,7 @@ func createBankHanlder(w http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(r.Body).Decode(&bank)
 	id, err := createBank(bank)
 	if err != nil {
-		log.Print(err.Error)
+		log.Print(err.Err)
 		http.Error(w, err.Message, err.Code)
 		return
 	}
@@ -72,21 +66,29 @@ func deleteBankByIdHandler(w http.ResponseWriter, r *http.Request) {
 	id, errParse := strconv.Atoi(vars["id"])
 	if errParse != nil {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
 	}
 	err := deleteBankById(id)
 	if err != nil {
-		log.Print(err.Error)
+		log.Print(err.Err)
 		http.Error(w, err.Message, err.Code)
 		return
 	}
 }
 
 func updateBankHanlder(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	id, errParse := strconv.Atoi(vars["id"])
+	if errParse != nil {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
 	var bank Bank
 	json.NewDecoder(r.Body).Decode(&bank)
-	updatedBank, err := updateBank(bank)
+	updatedBank, err := updateBank(Bank{id, bank.Name})
 	if err != nil {
-		log.Print(err.Error)
+		log.Print(err.Err)
 		http.Error(w, err.Message, err.Code)
 		return
 	}
@@ -96,7 +98,7 @@ func updateBankHanlder(w http.ResponseWriter, r *http.Request) {
 func deleteAllBanksHandler(w http.ResponseWriter, r *http.Request) {
 	err := deleteAllBanks()
 	if err != nil {
-		log.Print(err.Error)
+		log.Print(err.Err)
 		http.Error(w, err.Message, err.Code)
 		return
 	}

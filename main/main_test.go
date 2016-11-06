@@ -10,7 +10,7 @@ func panicOnErrInTest(err error) {
 		panic(err)
 	}
 }
-func panicOnHttpErrInTest(err *HttpError) {
+func panicOnHttpErrInTest(err *httpError) {
 	if err != nil {
 		panic(err)
 	}
