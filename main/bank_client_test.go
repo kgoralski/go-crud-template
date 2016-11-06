@@ -6,27 +6,29 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-const BZWBK = "BZWBK"
-const MBANK = "MBANK"
-const SANTANDER = "SANTANDER"
-const ALIOR = "ALIOR"
-const ING = "ING"
+const (
+	BZWBK     = "BZWBK"
+	MBANK     = "MBANK"
+	SANTANDER = "SANTANDER"
+	ALIOR     = "ALIOR"
+	ING       = "ING"
+)
 
 func TestGetBanksClient(t *testing.T) {
 	deleteAllBanks()
 	postBank(Bank{Name: BZWBK})
 	postBank(Bank{Name: MBANK})
 	banks, err := getAllBanks()
-	panicInTest(err)
+	panicOnErrInTest(err)
 	assert.Len(t, banks, 2, "Expected size is 2")
 
 }
 
 func TestGetOneBankClient(t *testing.T) {
 	id, err := postBank(Bank{Name: SANTANDER})
-	panicInTest(err)
+	panicOnErrInTest(err)
 	bank, errQuery := getOneBank(id)
-	panicInTest(errQuery)
+	panicOnErrInTest(errQuery)
 
 	assert.Equal(t, SANTANDER, bank.Name, "Expected that both names are equal")
 }
@@ -34,20 +36,20 @@ func TestGetOneBankClient(t *testing.T) {
 func TestCreateBankClient(t *testing.T) {
 	bank := Bank{Name: ALIOR}
 	id, err := postBank(bank)
-	panicInTest(err)
+	panicOnErrInTest(err)
 
 	createdBank, errQuery := getOneBank(id)
-	panicInTest(errQuery)
+	panicOnErrInTest(errQuery)
 
 	assert.Equal(t, ALIOR, createdBank.Name, "Expected that both names are equal")
 }
 
 func TestDeleteSingleBankClient(t *testing.T) {
 	id, err := postBank(Bank{Name: ING})
-	panicInTest(err)
+	panicOnErrInTest(err)
 	deleteBank(id)
 	banks, errQuery := getAllBanks()
-	panicInTest(errQuery)
+	panicOnErrInTest(errQuery)
 
 	for _, bank := range banks {
 		assert.NotEqual(t, ING, bank)
@@ -61,7 +63,7 @@ func TestDeleteAllBankClient(t *testing.T) {
 	postBank(Bank{Name: ALIOR})
 	deleteBanks()
 	banks, err := getAllBanks()
-	panicInTest(err)
+	panicOnErrInTest(err)
 
 	assert.Empty(t, banks)
 }

@@ -5,12 +5,12 @@ func init() {
 	deleteAllBanks()
 }
 
-func panicInTest(err error) {
+func panicOnErrInTest(err error) {
 	if err != nil {
 		panic(err)
 	}
 }
-func checkHttpErr(err *HttpError) {
+func panicOnHttpErrInTest(err *HttpError) {
 	if err != nil {
 		panic(err)
 	}

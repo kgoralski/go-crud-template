@@ -12,9 +12,11 @@ type Bank struct {
 	Name string `json:"name" db:"name"`
 }
 
-const DB_QUERY_FAIL = "DB_QUERY_FAIL"
-const DB_NOT_SUPPORTED = "DB_NOT_SUPPORTED"
-const ENTITY_NOT_EXIST = "ENTITY_NOT_EXIST"
+const (
+	DB_QUERY_FAIL    = "DB_QUERY_FAIL"
+	DB_NOT_SUPPORTED = "DB_NOT_SUPPORTED"
+	ENTITY_NOT_EXIST = "ENTITY_NOT_EXIST"
+)
 
 const sqlConnection string = "admin:Admin.123@tcp(localhost:3306)/bank_db?charset=utf8"
 
