@@ -1,63 +1,67 @@
 package main
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetBanksClient(t *testing.T) {
-	// You don't need to print test name, run tests with -v: go test -v (will print test name and stdout)
-	fmt.Println("TestGetBanksClient")
-	deleteAllBanks()
-	createBank(Bank{Name: "BZWBK"})
-	createBank(Bank{Name: "MBANK"})
-	banks := getAllBanks()
+const BZWBK = "BZWBK"
+const MBANK = "MBANK"
+const SANTANDER = "SANTANDER"
+const ALIOR = "ALIOR"
+const ING = "ING"
 
-	// Wrong order - assert.Len(t, expected, actual, "msg")
+func TestGetBanksClient(t *testing.T) {
+	deleteAllBanks()
+	postBank(Bank{Name: BZWBK})
+	postBank(Bank{Name: MBANK})
+	banks, err := getAllBanks()
+	panicInTest(err)
 	assert.Len(t, banks, 2, "Expected size is 2")
 
 }
 
 func TestGetOneBankClient(t *testing.T) {
-	fmt.Println("TestGetOneBankClient")
-	id := createBank(Bank{Name: "Santander"})
-	bank := getOneBank(int(id))
+	id, err := postBank(Bank{Name: SANTANDER})
+	panicInTest(err)
+	bank, errQuery := getOneBank(id)
+	panicInTest(errQuery)
 
-	// Wrong order - assert.Len(t, expected, actual, "msg")
-	assert.Equal(t, bank.Name, "Santander", "Expected that both names are equal")
+	assert.Equal(t, SANTANDER, bank.Name, "Expected that both names are equal")
 }
 
 func TestCreateBankClient(t *testing.T) {
-	fmt.Println("TestCreateBankClient")
-	bank := Bank{Name: "Alior"}
-	id := postBank(bank)
-	createdBank := getOneBank(id)
+	bank := Bank{Name: ALIOR}
+	id, err := postBank(bank)
+	panicInTest(err)
 
-	// Wrong order - assert.Equal(t, expected, actual, "msg")
-	assert.Equal(t, createdBank.Name, "Alior", "Expected that both names are equal")
+	createdBank, errQuery := getOneBank(id)
+	panicInTest(errQuery)
+
+	assert.Equal(t, ALIOR, createdBank.Name, "Expected that both names are equal")
 }
 
 func TestDeleteSingleBankClient(t *testing.T) {
-	fmt.Println("TestDeleteSingleBankClient")
-	id := createBank(Bank{Name: "Santander"})
+	id, err := postBank(Bank{Name: ING})
+	panicInTest(err)
 	deleteBank(id)
-	banks := getAllBanks()
+	banks, errQuery := getAllBanks()
+	panicInTest(errQuery)
 
-	// Wrong order - assert.NotEqual(t, expected, actual)
 	for _, bank := range banks {
-		assert.NotEqual(t, bank, "Santander")
+		assert.NotEqual(t, ING, bank)
 	}
 }
 
 func TestDeleteAllBankClient(t *testing.T) {
-	fmt.Println("TestDeleteAllBankClient")
-	createBank(Bank{Name: "BZWBK"})
-	createBank(Bank{Name: "MBANK"})
-	createBank(Bank{Name: "ING"})
+	deleteAllBanks()
+	postBank(Bank{Name: BZWBK})
+	postBank(Bank{Name: MBANK})
+	postBank(Bank{Name: ALIOR})
 	deleteBanks()
-	banks := getAllBanks()
+	banks, err := getAllBanks()
+	panicInTest(err)
 
 	assert.Empty(t, banks)
 }
