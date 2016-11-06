@@ -15,8 +15,19 @@ type HttpError struct {
 	Code    int
 }
 
+const (
+	Content_Type     = "Content-Type"
+	APPLICATION_JSON = "application/json"
+)
+
+func commonHeaders(fn http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set(Content_Type, APPLICATION_JSON)
+		fn(w, r)
+	}
+}
+
 func getBanksHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 	banks, err := getBanks()
 	if err != nil {
 		log.Print(err.Error)
@@ -27,7 +38,6 @@ func getBanksHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getBankbyIdHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 	vars := mux.Vars(r)
 
 	id, errParse := strconv.Atoi(vars["id"])
@@ -45,8 +55,6 @@ func getBankbyIdHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func createBankHanlder(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
 	var bank Bank
 	json.NewDecoder(r.Body).Decode(&bank)
 	id, err := createBank(bank)
@@ -59,7 +67,6 @@ func createBankHanlder(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteBankByIdHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 	vars := mux.Vars(r)
 
 	id, errParse := strconv.Atoi(vars["id"])
@@ -75,8 +82,6 @@ func deleteBankByIdHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateBankHanlder(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-
 	var bank Bank
 	json.NewDecoder(r.Body).Decode(&bank)
 	updatedBank, err := updateBank(bank)
@@ -89,7 +94,6 @@ func updateBankHanlder(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteAllBanksHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 	err := deleteAllBanks()
 	if err != nil {
 		log.Print(err.Error)
