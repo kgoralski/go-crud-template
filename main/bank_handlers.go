@@ -2,77 +2,98 @@ package main
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
 )
 
+type HttpError struct {
+	Error   error
+	Message string
+	Code    int
+}
+
 func getBanksHandler(w http.ResponseWriter, r *http.Request) {
-	// You can set wrap your handler in another handler - functions are types in go (function can implement interface)
 	w.Header().Set("Content-Type", "application/json")
-	m := getBanks()
-
-	// instead: json.NewEncoder(w).Encode(m)
-	b, err := json.Marshal(m)
-
-	checkErr(err)
-	w.Write(b)
+	banks, err := getBanks()
+	if err != nil {
+		log.Print(err.Error)
+		http.Error(w, err.Message, err.Code)
+		return
+	}
+	json.NewEncoder(w).Encode(banks)
 }
 
 func getBankbyIdHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	vars := mux.Vars(r)
 
-	id, err := strconv.Atoi(vars["id"])
-	checkErr(err)
-	m := getBankById(id)
-	b, err := json.Marshal(m)
-
-	checkErr(err)
-	w.Write(b)
+	id, errParse := strconv.Atoi(vars["id"])
+	if errParse != nil {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+	b, err := getBankById(id)
+	if err != nil {
+		log.Print(err.Error)
+		http.Error(w, err.Message, err.Code)
+		return
+	}
+	json.NewEncoder(w).Encode(b)
 }
 
 func createBankHanlder(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var bank Bank
-	b, err := ioutil.ReadAll(r.Body)
-	checkErr(err)
-	json.Unmarshal(b, &bank)
-	id := createBank(bank)
-
-	j, err := json.Marshal(id)
-	checkErr(err)
-	w.Write(j)
+	json.NewDecoder(r.Body).Decode(&bank)
+	id, err := createBank(bank)
+	if err != nil {
+		log.Print(err.Error)
+		http.Error(w, err.Message, err.Code)
+		return
+	}
+	json.NewEncoder(w).Encode(id)
 }
 
 func deleteBankByIdHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	vars := mux.Vars(r)
 
-	id, err := strconv.Atoi(vars["id"])
-	checkErr(err)
-	deleteBankById(id)
+	id, errParse := strconv.Atoi(vars["id"])
+	if errParse != nil {
+		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+	}
+	err := deleteBankById(id)
+	if err != nil {
+		log.Print(err.Error)
+		http.Error(w, err.Message, err.Code)
+		return
+	}
 }
 
 func updateBankHanlder(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var bank Bank
-	b, err := ioutil.ReadAll(r.Body)
-	checkErr(err)
-	json.Unmarshal(b, &bank)
-	updatedBank := updateBank(bank)
-
-	j, err := json.Marshal(updatedBank)
-	checkErr(err)
-	w.Write(j)
+	json.NewDecoder(r.Body).Decode(&bank)
+	updatedBank, err := updateBank(bank)
+	if err != nil {
+		log.Print(err.Error)
+		http.Error(w, err.Message, err.Code)
+		return
+	}
+	json.NewEncoder(w).Encode(updatedBank)
 }
 
 func deleteAllBanksHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-
-	deleteAllBanks()
+	err := deleteAllBanks()
+	if err != nil {
+		log.Print(err.Error)
+		http.Error(w, err.Message, err.Code)
+		return
+	}
 }
