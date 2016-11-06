@@ -19,4 +19,3 @@ func errTestPanic(err error) {
 		}
 	}
 }
-
