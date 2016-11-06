@@ -1,17 +1,22 @@
 package main
 
+import "log"
+
 func init() {
 	go startServer()
 	deleteAllBanks()
 }
 
-func panicOnErrInTest(err error) {
+func errTestPanic(err error) {
 	if err != nil {
-		panic(err)
+		switch e := err.(type) {
+		case *httpError:
+			log.Print(e)
+			panic(e)
+		default:
+			log.Print(err)
+			panic(err)
+		}
 	}
 }
-func panicOnHttpErrInTest(err *httpError) {
-	if err != nil {
-		panic(err)
-	}
-}
+

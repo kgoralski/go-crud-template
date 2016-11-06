@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -24,8 +23,7 @@ func commonHeaders(fn http.HandlerFunc) http.HandlerFunc {
 func getBanksHandler(w http.ResponseWriter, r *http.Request) {
 	banks, err := getBanks()
 	if err != nil {
-		log.Print(err.Err)
-		http.Error(w, err.Message, err.Code)
+		handleHttpError(w, err)
 		return
 	}
 	json.NewEncoder(w).Encode(banks)
@@ -41,8 +39,7 @@ func getBankbyIdHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	b, err := getBankById(id)
 	if err != nil {
-		log.Print(err.Err)
-		http.Error(w, err.Message, err.Code)
+		handleHttpError(w, err)
 		return
 	}
 	json.NewEncoder(w).Encode(b)
@@ -53,8 +50,7 @@ func createBankHanlder(w http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(r.Body).Decode(&bank)
 	id, err := createBank(bank)
 	if err != nil {
-		log.Print(err.Err)
-		http.Error(w, err.Message, err.Code)
+		handleHttpError(w, err)
 		return
 	}
 	json.NewEncoder(w).Encode(id)
@@ -70,8 +66,7 @@ func deleteBankByIdHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	err := deleteBankById(id)
 	if err != nil {
-		log.Print(err.Err)
-		http.Error(w, err.Message, err.Code)
+		handleHttpError(w, err)
 		return
 	}
 }
@@ -88,8 +83,7 @@ func updateBankHanlder(w http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(r.Body).Decode(&bank)
 	updatedBank, err := updateBank(Bank{id, bank.Name})
 	if err != nil {
-		log.Print(err.Err)
-		http.Error(w, err.Message, err.Code)
+		handleHttpError(w, err)
 		return
 	}
 	json.NewEncoder(w).Encode(updatedBank)
@@ -98,8 +92,7 @@ func updateBankHanlder(w http.ResponseWriter, r *http.Request) {
 func deleteAllBanksHandler(w http.ResponseWriter, r *http.Request) {
 	err := deleteAllBanks()
 	if err != nil {
-		log.Print(err.Err)
-		http.Error(w, err.Message, err.Code)
+		handleHttpError(w, err)
 		return
 	}
 }
