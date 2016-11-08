@@ -16,7 +16,7 @@ func (e *httpError) Error() string {
 	return fmt.Sprintf("HttpError[%s] Message[%s] Code[%d]", e.Err, e.Message, e.Code)
 }
 
-func handleHttpError(w http.ResponseWriter, err error) {
+func handleHTTPError(w http.ResponseWriter, err error) {
 	switch e := err.(type) {
 	case *httpError:
 		log.Print(e)

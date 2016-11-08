@@ -9,13 +9,13 @@ import (
 )
 
 const (
-	Content_Type     = "Content-Type"
-	APPLICATION_JSON = "application/json"
+	contentType     = "Content-Type"
+	applicationJSON = "application/json"
 )
 
 func commonHeaders(fn http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set(Content_Type, APPLICATION_JSON)
+		w.Header().Set(contentType, applicationJSON)
 		fn(w, r)
 	}
 }
@@ -23,23 +23,23 @@ func commonHeaders(fn http.HandlerFunc) http.HandlerFunc {
 func getBanksHandler(w http.ResponseWriter, r *http.Request) {
 	banks, err := getBanks()
 	if err != nil {
-		handleHttpError(w, err)
+		handleHTTPError(w, err)
 		return
 	}
 	json.NewEncoder(w).Encode(banks)
 }
 
-func getBankbyIdHandler(w http.ResponseWriter, r *http.Request) {
+func getBankbyIDHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
-	id, errParse := strconv.Atoi(vars["id"])
-	if errParse != nil {
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
-	b, err := getBankById(id)
+	b, err := getBankByID(id)
 	if err != nil {
-		handleHttpError(w, err)
+		handleHTTPError(w, err)
 		return
 	}
 	json.NewEncoder(w).Encode(b)
@@ -50,23 +50,23 @@ func createBankHanlder(w http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(r.Body).Decode(&bank)
 	id, err := createBank(bank)
 	if err != nil {
-		handleHttpError(w, err)
+		handleHTTPError(w, err)
 		return
 	}
 	json.NewEncoder(w).Encode(id)
 }
 
-func deleteBankByIdHandler(w http.ResponseWriter, r *http.Request) {
+func deleteBankByIDHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
-	id, errParse := strconv.Atoi(vars["id"])
-	if errParse != nil {
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
-	err := deleteBankById(id)
+	err = deleteBankByID(id)
 	if err != nil {
-		handleHttpError(w, err)
+		handleHTTPError(w, err)
 		return
 	}
 }
@@ -74,8 +74,8 @@ func deleteBankByIdHandler(w http.ResponseWriter, r *http.Request) {
 func updateBankHanlder(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
-	id, errParse := strconv.Atoi(vars["id"])
-	if errParse != nil {
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
@@ -83,7 +83,7 @@ func updateBankHanlder(w http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(r.Body).Decode(&bank)
 	updatedBank, err := updateBank(Bank{id, bank.Name})
 	if err != nil {
-		handleHttpError(w, err)
+		handleHTTPError(w, err)
 		return
 	}
 	json.NewEncoder(w).Encode(updatedBank)
@@ -92,7 +92,7 @@ func updateBankHanlder(w http.ResponseWriter, r *http.Request) {
 func deleteAllBanksHandler(w http.ResponseWriter, r *http.Request) {
 	err := deleteAllBanks()
 	if err != nil {
-		handleHttpError(w, err)
+		handleHTTPError(w, err)
 		return
 	}
 }

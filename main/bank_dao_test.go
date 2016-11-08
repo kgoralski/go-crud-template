@@ -8,54 +8,54 @@ import (
 
 func TestGetBanks(t *testing.T) {
 	deleteAllBanks()
-	createBank(Bank{Name: BZWBK})
-	createBank(Bank{Name: MBANK})
+	createBank(Bank{Name: bzwbk})
+	createBank(Bank{Name: mbank})
 
 	banks, err := getBanks()
-	errTestPanic(err)
+	logFatalOnTest(err)
 	assert.Len(t, banks, 2, "Expected size is 2")
 }
 
 func TestCreateBank(t *testing.T) {
-	id, err := createBank(Bank{Name: MBANK})
-	errTestPanic(err)
+	id, err := createBank(Bank{Name: mbank})
+	logFatalOnTest(err)
 	assert.NotZero(t, id)
 }
 
 func TestDeleteAllBanks(t *testing.T) {
-	createBank(Bank{Name: BZWBK})
-	createBank(Bank{Name: MBANK})
+	createBank(Bank{Name: bzwbk})
+	createBank(Bank{Name: mbank})
 	deleteAllBanks()
 	banks, err := getBanks()
-	errTestPanic(err)
+	logFatalOnTest(err)
 	assert.Empty(t, banks)
 }
 
 func TestGetBankById(t *testing.T) {
-	id, err := createBank(Bank{Name: SANTANDER})
-	errTestPanic(err)
-	bank, errQuery := getBankById(int(id))
-	errTestPanic(errQuery)
+	id, err := createBank(Bank{Name: santander})
+	logFatalOnTest(err)
+	bank, errQuery := getBankByID(int(id))
+	logFatalOnTest(errQuery)
 
-	assert.Equal(t, SANTANDER, bank.Name)
+	assert.Equal(t, santander, bank.Name)
 }
 
 func TestDeleteBankById(t *testing.T) {
-	id, err := createBank(Bank{Name: MBANK})
-	errTestPanic(err)
+	id, err := createBank(Bank{Name: mbank})
+	logFatalOnTest(err)
 
-	deleteBankById(int(id))
+	deleteBankByID(int(id))
 	banks, errQuery := getBanks()
-	errTestPanic(errQuery)
+	logFatalOnTest(errQuery)
 
 	assert.NotZero(t, banks)
 }
 
 func TestUpdateBank(t *testing.T) {
-	id, err := createBank(Bank{Name: MBANK})
-	errTestPanic(err)
-	bank, errQuery := updateBank(Bank{Id: int(id), Name: BZWBK})
-	errTestPanic(errQuery)
+	id, err := createBank(Bank{Name: mbank})
+	logFatalOnTest(err)
+	bank, errQuery := updateBank(Bank{ID: int(id), Name: bzwbk})
+	logFatalOnTest(errQuery)
 
-	assert.Equal(t, BZWBK, bank.Name)
+	assert.Equal(t, bzwbk, bank.Name)
 }
