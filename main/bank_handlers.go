@@ -23,7 +23,7 @@ func commonHeaders(fn http.HandlerFunc) http.HandlerFunc {
 func getBanksHandler(w http.ResponseWriter, r *http.Request) {
 	db, err := NewBankAPI()
 	if err != nil {
-		http.Error(w, dbConnectionFail, http.StatusServiceUnavailable)
+		handleErrors(w, &dbError{err, dbConnectionFail})
 		return
 	}
 	banks, err := getBanks(db)
@@ -41,12 +41,12 @@ func getBankByIDHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		handleErrors(w, &httpError{err, http.StatusText(http.StatusBadRequest), http.StatusBadRequest})
 		return
 	}
 	db, err := NewBankAPI()
 	if err != nil {
-		http.Error(w, dbConnectionFail, http.StatusServiceUnavailable)
+		handleErrors(w, &dbError{err, dbConnectionFail})
 		return
 	}
 	b, err := getBankByID(id, db)
@@ -68,7 +68,7 @@ func createBankHanlder(w http.ResponseWriter, r *http.Request) {
 	}
 	db, err := NewBankAPI()
 	if err != nil {
-		http.Error(w, dbConnectionFail, http.StatusServiceUnavailable)
+		handleErrors(w, &dbError{err, dbConnectionFail})
 		return
 	}
 	id, err := createBank(bank, db)
@@ -87,12 +87,12 @@ func deleteBankByIDHandler(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		handleErrors(w, &httpError{err, http.StatusText(http.StatusBadRequest), http.StatusBadRequest})
 		return
 	}
 	db, err := NewBankAPI()
 	if err != nil {
-		http.Error(w, dbConnectionFail, http.StatusServiceUnavailable)
+		handleErrors(w, &dbError{err, dbConnectionFail})
 		return
 	}
 	if err = deleteBankByID(id, db); err != nil {
@@ -106,7 +106,7 @@ func updateBankHanlder(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		handleErrors(w, &httpError{err, http.StatusText(http.StatusBadRequest), http.StatusBadRequest})
 		return
 	}
 	var bank Bank
@@ -116,7 +116,7 @@ func updateBankHanlder(w http.ResponseWriter, r *http.Request) {
 	}
 	db, err := NewBankAPI()
 	if err != nil {
-		http.Error(w, dbConnectionFail, http.StatusServiceUnavailable)
+		handleErrors(w, &dbError{err, dbConnectionFail})
 		return
 	}
 	updatedBank, err := updateBank(Bank{id, bank.Name}, db)
@@ -133,7 +133,7 @@ func updateBankHanlder(w http.ResponseWriter, r *http.Request) {
 func deleteAllBanksHandler(w http.ResponseWriter, r *http.Request) {
 	db, err := NewBankAPI()
 	if err != nil {
-		http.Error(w, dbConnectionFail, http.StatusServiceUnavailable)
+		handleErrors(w, &dbError{err, dbConnectionFail})
 		return
 	}
 	if err := deleteAllBanks(db); err != nil {

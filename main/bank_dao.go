@@ -7,13 +7,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-const (
-	dbQueryFail      = "DB_QUERY_FAIL"
-	dbNotSupported   = "DB_NOT_SUPPORTED"
-	entityNotExist   = "ENTITY_NOT_EXIST"
-	dbConnectionFail = "DB_CONNECTION_FAIL"
-	sqlConnection    = "admin:Admin.123@tcp(localhost:3306)/bank_db?charset=utf8"
-)
+const sqlConnection = "admin:Admin.123@tcp(localhost:3306)/bank_db?charset=utf8"
 
 /*
 Bank struct Public only for example reasons

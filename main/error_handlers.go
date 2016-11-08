@@ -6,6 +6,13 @@ import (
 	"net/http"
 )
 
+const (
+	dbQueryFail      = "DB_QUERY_FAIL"
+	dbNotSupported   = "DB_NOT_SUPPORTED"
+	entityNotExist   = "ENTITY_NOT_EXIST"
+	dbConnectionFail = "DB_CONNECTION_FAIL"
+)
+
 type httpError struct {
 	Err     error
 	Message string
@@ -35,6 +42,8 @@ func handleErrors(w http.ResponseWriter, err error) {
 		switch e.Message {
 		case dbQueryFail:
 			http.Error(w, dbQueryFail, http.StatusConflict)
+		case dbConnectionFail:
+			http.Error(w, dbConnectionFail, http.StatusServiceUnavailable)
 		case dbNotSupported:
 			http.Error(w, dbNotSupported, http.StatusConflict)
 		case entityNotExist:
