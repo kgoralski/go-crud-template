@@ -8,44 +8,58 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+const (
+	dbQueryFail      = "DB_QUERY_FAIL"
+	dbNotSupported   = "DB_NOT_SUPPORTED"
+	entityNotExist   = "ENTITY_NOT_EXIST"
+	dbConnectionFail = "DB_CONNECTION_FAIL"
+	sqlConnection    = "admin:Admin.123@tcp(localhost:3306)/bank_db?charset=utf8"
+)
+
 /*
-Bank struct declared here only for example reasons
+Bank struct Public only for example reasons
 */
 type Bank struct {
 	ID   int    `json:"id" db:"id"`
 	Name string `json:"name" db:"name"`
 }
 
-const (
-	dbQueryFail    = "DB_QUERY_FAIL"
-	dbNotSupported = "DB_NOT_SUPPORTED"
-	entityNotExist = "ENTITY_NOT_EXIST"
-	sqlConnection  = "admin:Admin.123@tcp(localhost:3306)/bank_db?charset=utf8"
-)
+/*
+BankAPI struct Public only for example reasons
+*/
+type BankAPI struct {
+	db *sqlx.DB
+}
 
-func getBanks() ([]Bank, error) {
-	db := sqlx.MustConnect("mysql", sqlConnection)
-	var banks = []Bank{}
-	err := db.Select(&banks, "SELECT * FROM banks")
+/*
+NewBankAPI struct Public only for example reasons
+*/
+func NewBankAPI() (*BankAPI, error) {
+	db, err := sqlx.Connect("mysql", sqlConnection)
 	if err != nil {
+		return nil, err
+	}
+	return &BankAPI{db: db}, nil
+}
+
+func getBanks(b *BankAPI) ([]Bank, error) {
+	var banks = []Bank{}
+	if err := b.db.Select(&banks, "SELECT * FROM banks"); err != nil {
 		return nil, &httpError{err, dbQueryFail, http.StatusConflict}
 	}
 	return banks, nil
 }
 
-func getBankByID(id int) (*Bank, error) {
-	db := sqlx.MustConnect("mysql", sqlConnection)
+func getBankByID(id int, b *BankAPI) (*Bank, error) {
 	var bank = Bank{}
-	err := db.Get(&bank, "SELECT * FROM banks WHERE id=?", id)
-	if err != nil {
+	if err := b.db.Get(&bank, "SELECT * FROM banks WHERE id=?", id); err != nil {
 		return nil, &httpError{err, dbQueryFail, http.StatusConflict}
 	}
 	return &bank, nil
 }
 
-func createBank(bank Bank) (int, error) {
-	db := sqlx.MustConnect("mysql", sqlConnection)
-	result, err := db.Exec("INSERT into banks (name) VALUES (?)", bank.Name)
+func createBank(bank Bank, b *BankAPI) (int, error) {
+	result, err := b.db.Exec("INSERT into banks (name) VALUES (?)", bank.Name)
 	if err != nil {
 		return 0, &httpError{err, dbQueryFail, http.StatusConflict}
 	}
@@ -56,18 +70,15 @@ func createBank(bank Bank) (int, error) {
 	return int(lastID), nil
 }
 
-func deleteAllBanks() error {
-	db := sqlx.MustConnect("mysql", sqlConnection)
-	_, err := db.Exec("TRUNCATE table banks")
-	if err != nil {
+func deleteAllBanks(b *BankAPI) error {
+	if _, err := b.db.Exec("TRUNCATE table banks"); err != nil {
 		return &httpError{err, dbQueryFail, http.StatusConflict}
 	}
 	return nil
 }
 
-func deleteBankByID(id int) error {
-	db := sqlx.MustConnect("mysql", sqlConnection)
-	res, err := db.Exec("DELETE from banks where id=?", id)
+func deleteBankByID(id int, b *BankAPI) error {
+	res, err := b.db.Exec("DELETE from banks where id=?", id)
 	if err != nil {
 		return &httpError{err, dbQueryFail, http.StatusConflict}
 	}
@@ -81,9 +92,8 @@ func deleteBankByID(id int) error {
 	return nil
 }
 
-func updateBank(bank Bank) (*Bank, error) {
-	db := sqlx.MustConnect("mysql", sqlConnection)
-	res, err := db.Exec("UPDATE banks SET name=? WHERE id=?", bank.Name, bank.ID)
+func updateBank(bank Bank, b *BankAPI) (*Bank, error) {
+	res, err := b.db.Exec("UPDATE banks SET name=? WHERE id=?", bank.Name, bank.ID)
 	if err != nil {
 		return nil, &httpError{err, dbQueryFail, http.StatusConflict}
 	}

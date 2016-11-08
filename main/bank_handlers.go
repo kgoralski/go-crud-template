@@ -21,39 +21,65 @@ func commonHeaders(fn http.HandlerFunc) http.HandlerFunc {
 }
 
 func getBanksHandler(w http.ResponseWriter, r *http.Request) {
-	banks, err := getBanks()
+	db, err := NewBankAPI()
+	if err != nil {
+		http.Error(w, dbConnectionFail, http.StatusServiceUnavailable)
+		return
+	}
+	banks, err := getBanks(db)
 	if err != nil {
 		handleHTTPError(w, err)
 		return
 	}
-	json.NewEncoder(w).Encode(banks)
+	if err := json.NewEncoder(w).Encode(banks); err != nil {
+		handleHTTPError(w, err)
+		return
+	}
 }
 
 func getBankByIDHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
-	b, err := getBankByID(id)
+	db, err := NewBankAPI()
+	if err != nil {
+		http.Error(w, dbConnectionFail, http.StatusServiceUnavailable)
+		return
+	}
+	b, err := getBankByID(id, db)
 	if err != nil {
 		handleHTTPError(w, err)
 		return
 	}
-	json.NewEncoder(w).Encode(b)
+	if err := json.NewEncoder(w).Encode(b); err != nil {
+		handleHTTPError(w, err)
+		return
+	}
 }
 
 func createBankHanlder(w http.ResponseWriter, r *http.Request) {
 	var bank Bank
-	json.NewDecoder(r.Body).Decode(&bank)
-	id, err := createBank(bank)
+	if err := json.NewDecoder(r.Body).Decode(&bank); err != nil {
+		handleHTTPError(w, err)
+		return
+	}
+	db, err := NewBankAPI()
+	if err != nil {
+		http.Error(w, dbConnectionFail, http.StatusServiceUnavailable)
+		return
+	}
+	id, err := createBank(bank, db)
 	if err != nil {
 		handleHTTPError(w, err)
 		return
 	}
-	json.NewEncoder(w).Encode(id)
+	if err := json.NewEncoder(w).Encode(id); err != nil {
+		handleHTTPError(w, err)
+		return
+	}
 }
 
 func deleteBankByIDHandler(w http.ResponseWriter, r *http.Request) {
@@ -64,8 +90,12 @@ func deleteBankByIDHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
-	err = deleteBankByID(id)
+	db, err := NewBankAPI()
 	if err != nil {
+		http.Error(w, dbConnectionFail, http.StatusServiceUnavailable)
+		return
+	}
+	if err = deleteBankByID(id, db); err != nil {
 		handleHTTPError(w, err)
 		return
 	}
@@ -80,18 +110,33 @@ func updateBankHanlder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var bank Bank
-	json.NewDecoder(r.Body).Decode(&bank)
-	updatedBank, err := updateBank(Bank{id, bank.Name})
+	if err := json.NewDecoder(r.Body).Decode(&bank); err != nil {
+		handleHTTPError(w, err)
+		return
+	}
+	db, err := NewBankAPI()
+	if err != nil {
+		http.Error(w, dbConnectionFail, http.StatusServiceUnavailable)
+		return
+	}
+	updatedBank, err := updateBank(Bank{id, bank.Name}, db)
 	if err != nil {
 		handleHTTPError(w, err)
 		return
 	}
-	json.NewEncoder(w).Encode(updatedBank)
+	if err := json.NewEncoder(w).Encode(updatedBank); err != nil {
+		handleHTTPError(w, err)
+		return
+	}
 }
 
 func deleteAllBanksHandler(w http.ResponseWriter, r *http.Request) {
-	err := deleteAllBanks()
+	db, err := NewBankAPI()
 	if err != nil {
+		http.Error(w, dbConnectionFail, http.StatusServiceUnavailable)
+		return
+	}
+	if err := deleteAllBanks(db); err != nil {
 		handleHTTPError(w, err)
 		return
 	}

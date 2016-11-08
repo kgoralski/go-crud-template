@@ -15,7 +15,7 @@ const (
 )
 
 func TestGetBanksClient(t *testing.T) {
-	deleteAllBanks()
+	deleteBanks()
 	postBank(Bank{Name: bzwbk})
 	postBank(Bank{Name: mbank})
 	banks, err := getAllBanks()
@@ -57,7 +57,7 @@ func TestDeleteSingleBankClient(t *testing.T) {
 }
 
 func TestDeleteAllBankClient(t *testing.T) {
-	deleteAllBanks()
+	deleteBanks()
 	postBank(Bank{Name: bzwbk})
 	postBank(Bank{Name: mbank})
 	postBank(Bank{Name: alior})
