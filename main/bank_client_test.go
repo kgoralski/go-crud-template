@@ -19,16 +19,16 @@ func TestGetBanksClient(t *testing.T) {
 	postBank(Bank{Name: bzwbk})
 	postBank(Bank{Name: mbank})
 	banks, err := getAllBanks()
-	logFatalOnTest(err)
+	logFatalOnTest(t, err)
 	assert.Len(t, banks, 2, "Expected size is 2")
 
 }
 
 func TestGetOneBankClient(t *testing.T) {
 	id, err := postBank(Bank{Name: santander})
-	logFatalOnTest(err)
+	logFatalOnTest(t, err)
 	bank, errQuery := getOneBank(id)
-	logFatalOnTest(errQuery)
+	logFatalOnTest(t, errQuery)
 
 	assert.Equal(t, santander, bank.Name, "Expected that both names are equal")
 }
@@ -36,20 +36,20 @@ func TestGetOneBankClient(t *testing.T) {
 func TestCreateBankClient(t *testing.T) {
 	bank := Bank{Name: alior}
 	id, err := postBank(bank)
-	logFatalOnTest(err)
+	logFatalOnTest(t, err)
 
 	createdBank, errQuery := getOneBank(id)
-	logFatalOnTest(errQuery)
+	logFatalOnTest(t, errQuery)
 
 	assert.Equal(t, alior, createdBank.Name, "Expected that both names are equal")
 }
 
 func TestDeleteSingleBankClient(t *testing.T) {
 	id, err := postBank(Bank{Name: ing})
-	logFatalOnTest(err)
+	logFatalOnTest(t, err)
 	deleteBank(id)
 	banks, errQuery := getAllBanks()
-	logFatalOnTest(errQuery)
+	logFatalOnTest(t, errQuery)
 
 	for _, bank := range banks {
 		assert.NotEqual(t, ing, bank)
@@ -63,7 +63,7 @@ func TestDeleteAllBankClient(t *testing.T) {
 	postBank(Bank{Name: alior})
 	deleteBanks()
 	banks, err := getAllBanks()
-	logFatalOnTest(err)
+	logFatalOnTest(t, err)
 
 	assert.Empty(t, banks)
 }
