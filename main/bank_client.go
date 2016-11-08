@@ -7,10 +7,10 @@ import (
 	"net/http"
 )
 
-const BASE_URL string = "http://localhost:8080/rest/banks/"
+const baseURL string = "http://localhost:8080/rest/banks/"
 
 func getAllBanks() ([]Bank, error) {
-	resp, err := http.Get(BASE_URL)
+	resp, err := http.Get(baseURL)
 	if err != nil {
 		return nil, err
 	}
@@ -21,7 +21,7 @@ func getAllBanks() ([]Bank, error) {
 }
 
 func getOneBank(id int) (*Bank, error) {
-	resp, err := http.Get(fmt.Sprintf(BASE_URL+"%d", id))
+	resp, err := http.Get(fmt.Sprintf(baseURL+"%d", id))
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +37,7 @@ func postBank(bank Bank) (int, error) {
 	if err != nil {
 		return -1, err
 	}
-	r, err := http.Post(BASE_URL, "text/plain", buf)
+	r, err := http.Post(baseURL, "text/plain", buf)
 	if err != nil {
 		return -1, err
 	}
@@ -48,7 +48,7 @@ func postBank(bank Bank) (int, error) {
 }
 
 func deleteBank(id int) error {
-	req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf(BASE_URL+"%d", id), nil)
+	req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf(baseURL+"%d", id), nil)
 	if err != nil {
 		return err
 	}
@@ -61,7 +61,7 @@ func deleteBank(id int) error {
 }
 
 func deleteBanks() error {
-	req, err := http.NewRequest(http.MethodDelete, BASE_URL, nil)
+	req, err := http.NewRequest(http.MethodDelete, baseURL, nil)
 	if err != nil {
 		return err
 	}

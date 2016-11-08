@@ -7,15 +7,13 @@ func init() {
 	deleteAllBanks()
 }
 
-func errTestPanic(err error) {
+func logFatalOnTest(err error) {
 	if err != nil {
 		switch e := err.(type) {
 		case *httpError:
-			log.Print(e)
-			panic(e)
+			log.Fatal(e)
 		default:
-			log.Print(err)
-			panic(err)
+			log.Fatal(err)
 		}
 	}
 }

@@ -8,16 +8,19 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+/*
+Bank struct declared here only for example reasons
+*/
 type Bank struct {
-	Id   int    `json:"id" db:"id"`
+	ID   int    `json:"id" db:"id"`
 	Name string `json:"name" db:"name"`
 }
 
 const (
-	DB_QUERY_FAIL    = "DB_QUERY_FAIL"
-	DB_NOT_SUPPORTED = "DB_NOT_SUPPORTED"
-	ENTITY_NOT_EXIST = "ENTITY_NOT_EXIST"
-	sqlConnection    = "admin:Admin.123@tcp(localhost:3306)/bank_db?charset=utf8"
+	dbQueryFail    = "DB_QUERY_FAIL"
+	dbNotSupported = "DB_NOT_SUPPORTED"
+	entityNotExist = "ENTITY_NOT_EXIST"
+	sqlConnection  = "admin:Admin.123@tcp(localhost:3306)/bank_db?charset=utf8"
 )
 
 func getBanks() ([]Bank, error) {
@@ -25,17 +28,17 @@ func getBanks() ([]Bank, error) {
 	var banks = []Bank{}
 	err := db.Select(&banks, "SELECT * FROM banks")
 	if err != nil {
-		return nil, &httpError{err, DB_QUERY_FAIL, http.StatusConflict}
+		return nil, &httpError{err, dbQueryFail, http.StatusConflict}
 	}
 	return banks, nil
 }
 
-func getBankById(id int) (*Bank, error) {
+func getBankByID(id int) (*Bank, error) {
 	db := sqlx.MustConnect("mysql", sqlConnection)
 	var bank = Bank{}
 	err := db.Get(&bank, "SELECT * FROM banks WHERE id=?", id)
 	if err != nil {
-		return nil, &httpError{err, DB_QUERY_FAIL, http.StatusConflict}
+		return nil, &httpError{err, dbQueryFail, http.StatusConflict}
 	}
 	return &bank, nil
 }
@@ -44,49 +47,49 @@ func createBank(bank Bank) (int, error) {
 	db := sqlx.MustConnect("mysql", sqlConnection)
 	result, err := db.Exec("INSERT into banks (name) VALUES (?)", bank.Name)
 	if err != nil {
-		return -1, &httpError{err, DB_QUERY_FAIL, http.StatusConflict}
+		return 0, &httpError{err, dbQueryFail, http.StatusConflict}
 	}
-	lastId, err := result.LastInsertId()
+	lastID, err := result.LastInsertId()
 	if err != nil {
-		return -1, &httpError{err, DB_NOT_SUPPORTED, http.StatusConflict}
+		return 0, &httpError{err, dbNotSupported, http.StatusConflict}
 	}
-	return int(lastId), nil
+	return int(lastID), nil
 }
 
 func deleteAllBanks() error {
 	db := sqlx.MustConnect("mysql", sqlConnection)
 	_, err := db.Exec("TRUNCATE table banks")
 	if err != nil {
-		return &httpError{err, DB_QUERY_FAIL, http.StatusConflict}
+		return &httpError{err, dbQueryFail, http.StatusConflict}
 	}
 	return nil
 }
 
-func deleteBankById(id int) error {
+func deleteBankByID(id int) error {
 	db := sqlx.MustConnect("mysql", sqlConnection)
 	res, err := db.Exec("DELETE from banks where id=?", id)
 	if err != nil {
-		return &httpError{err, DB_QUERY_FAIL, http.StatusConflict}
+		return &httpError{err, dbQueryFail, http.StatusConflict}
 	}
 	affect, err := res.RowsAffected()
 	if err != nil {
-		return &httpError{err, DB_QUERY_FAIL, http.StatusBadRequest}
+		return &httpError{err, dbQueryFail, http.StatusBadRequest}
 	}
 	if affect == 0 {
-		return &httpError{errors.New(ENTITY_NOT_EXIST), ENTITY_NOT_EXIST, http.StatusNotFound}
+		return &httpError{errors.New(entityNotExist), entityNotExist, http.StatusNotFound}
 	}
 	return nil
 }
 
 func updateBank(bank Bank) (*Bank, error) {
 	db := sqlx.MustConnect("mysql", sqlConnection)
-	res, err := db.Exec("UPDATE banks SET name=? WHERE id=?", bank.Name, bank.Id)
+	res, err := db.Exec("UPDATE banks SET name=? WHERE id=?", bank.Name, bank.ID)
 	if err != nil {
-		return nil, &httpError{err, DB_QUERY_FAIL, http.StatusConflict}
+		return nil, &httpError{err, dbQueryFail, http.StatusConflict}
 	}
 	affect, err := res.RowsAffected()
 	if affect == 0 {
-		return nil, &httpError{errors.New(ENTITY_NOT_EXIST), ENTITY_NOT_EXIST, http.StatusNotFound}
+		return nil, &httpError{errors.New(entityNotExist), entityNotExist, http.StatusNotFound}
 	}
 	return &bank, nil
 }
