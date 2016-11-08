@@ -25,7 +25,7 @@ func (e *dbError) Error() string {
 	return fmt.Sprintf("DbError[%s] Message[%s]", e.Err, e.Message)
 }
 
-func handleHTTPError(w http.ResponseWriter, err error) {
+func handleErrors(w http.ResponseWriter, err error) {
 	switch e := err.(type) {
 	case *httpError:
 		log.Print(e)

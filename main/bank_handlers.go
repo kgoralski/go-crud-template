@@ -28,11 +28,11 @@ func getBanksHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	banks, err := getBanks(db)
 	if err != nil {
-		handleHTTPError(w, err)
+		handleErrors(w, err)
 		return
 	}
 	if err := json.NewEncoder(w).Encode(banks); err != nil {
-		handleHTTPError(w, err)
+		handleErrors(w, err)
 		return
 	}
 }
@@ -51,11 +51,11 @@ func getBankByIDHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	b, err := getBankByID(id, db)
 	if err != nil {
-		handleHTTPError(w, err)
+		handleErrors(w, err)
 		return
 	}
 	if err := json.NewEncoder(w).Encode(b); err != nil {
-		handleHTTPError(w, err)
+		handleErrors(w, err)
 		return
 	}
 }
@@ -63,7 +63,7 @@ func getBankByIDHandler(w http.ResponseWriter, r *http.Request) {
 func createBankHanlder(w http.ResponseWriter, r *http.Request) {
 	var bank Bank
 	if err := json.NewDecoder(r.Body).Decode(&bank); err != nil {
-		handleHTTPError(w, err)
+		handleErrors(w, err)
 		return
 	}
 	db, err := NewBankAPI()
@@ -73,11 +73,11 @@ func createBankHanlder(w http.ResponseWriter, r *http.Request) {
 	}
 	id, err := createBank(bank, db)
 	if err != nil {
-		handleHTTPError(w, err)
+		handleErrors(w, err)
 		return
 	}
 	if err := json.NewEncoder(w).Encode(id); err != nil {
-		handleHTTPError(w, err)
+		handleErrors(w, err)
 		return
 	}
 }
@@ -96,7 +96,7 @@ func deleteBankByIDHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err = deleteBankByID(id, db); err != nil {
-		handleHTTPError(w, err)
+		handleErrors(w, err)
 		return
 	}
 }
@@ -111,7 +111,7 @@ func updateBankHanlder(w http.ResponseWriter, r *http.Request) {
 	}
 	var bank Bank
 	if err := json.NewDecoder(r.Body).Decode(&bank); err != nil {
-		handleHTTPError(w, err)
+		handleErrors(w, err)
 		return
 	}
 	db, err := NewBankAPI()
@@ -121,11 +121,11 @@ func updateBankHanlder(w http.ResponseWriter, r *http.Request) {
 	}
 	updatedBank, err := updateBank(Bank{id, bank.Name}, db)
 	if err != nil {
-		handleHTTPError(w, err)
+		handleErrors(w, err)
 		return
 	}
 	if err := json.NewEncoder(w).Encode(updatedBank); err != nil {
-		handleHTTPError(w, err)
+		handleErrors(w, err)
 		return
 	}
 }
@@ -137,7 +137,7 @@ func deleteAllBanksHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := deleteAllBanks(db); err != nil {
-		handleHTTPError(w, err)
+		handleErrors(w, err)
 		return
 	}
 }
