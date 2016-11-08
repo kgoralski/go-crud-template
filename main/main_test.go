@@ -14,6 +14,8 @@ func logFatalOnTest(t *testing.T, err error) {
 		switch e := err.(type) {
 		case *httpError:
 			t.Fatal(e)
+		case *dbError:
+			t.Fatal(e)
 		default:
 			t.Fatal(err)
 		}

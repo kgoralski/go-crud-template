@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -45,7 +44,7 @@ func NewBankAPI() (*BankAPI, error) {
 func getBanks(b *BankAPI) ([]Bank, error) {
 	var banks = []Bank{}
 	if err := b.db.Select(&banks, "SELECT * FROM banks"); err != nil {
-		return nil, &httpError{err, dbQueryFail, http.StatusConflict}
+		return nil, &dbError{err, dbQueryFail}
 	}
 	return banks, nil
 }
@@ -53,7 +52,7 @@ func getBanks(b *BankAPI) ([]Bank, error) {
 func getBankByID(id int, b *BankAPI) (*Bank, error) {
 	var bank = Bank{}
 	if err := b.db.Get(&bank, "SELECT * FROM banks WHERE id=?", id); err != nil {
-		return nil, &httpError{err, dbQueryFail, http.StatusConflict}
+		return nil, &dbError{err, dbQueryFail}
 	}
 	return &bank, nil
 }
@@ -61,18 +60,18 @@ func getBankByID(id int, b *BankAPI) (*Bank, error) {
 func createBank(bank Bank, b *BankAPI) (int, error) {
 	result, err := b.db.Exec("INSERT into banks (name) VALUES (?)", bank.Name)
 	if err != nil {
-		return 0, &httpError{err, dbQueryFail, http.StatusConflict}
+		return 0, &dbError{err, dbQueryFail}
 	}
 	lastID, err := result.LastInsertId()
 	if err != nil {
-		return 0, &httpError{err, dbNotSupported, http.StatusConflict}
+		return 0, &dbError{err, dbNotSupported}
 	}
 	return int(lastID), nil
 }
 
 func deleteAllBanks(b *BankAPI) error {
 	if _, err := b.db.Exec("TRUNCATE table banks"); err != nil {
-		return &httpError{err, dbQueryFail, http.StatusConflict}
+		return &dbError{err, dbQueryFail}
 	}
 	return nil
 }
@@ -80,14 +79,14 @@ func deleteAllBanks(b *BankAPI) error {
 func deleteBankByID(id int, b *BankAPI) error {
 	res, err := b.db.Exec("DELETE from banks where id=?", id)
 	if err != nil {
-		return &httpError{err, dbQueryFail, http.StatusConflict}
+		return &dbError{err, dbQueryFail}
 	}
 	affect, err := res.RowsAffected()
 	if err != nil {
-		return &httpError{err, dbQueryFail, http.StatusBadRequest}
+		return &dbError{err, dbQueryFail}
 	}
 	if affect == 0 {
-		return &httpError{errors.New(entityNotExist), entityNotExist, http.StatusNotFound}
+		return &dbError{errors.New(entityNotExist), entityNotExist}
 	}
 	return nil
 }
@@ -95,11 +94,11 @@ func deleteBankByID(id int, b *BankAPI) error {
 func updateBank(bank Bank, b *BankAPI) (*Bank, error) {
 	res, err := b.db.Exec("UPDATE banks SET name=? WHERE id=?", bank.Name, bank.ID)
 	if err != nil {
-		return nil, &httpError{err, dbQueryFail, http.StatusConflict}
+		return nil, &dbError{err, dbQueryFail}
 	}
 	affect, err := res.RowsAffected()
 	if affect == 0 {
-		return nil, &httpError{errors.New(entityNotExist), entityNotExist, http.StatusNotFound}
+		return nil, &dbError{errors.New(entityNotExist), entityNotExist}
 	}
 	return &bank, nil
 }
