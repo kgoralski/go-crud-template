@@ -35,11 +35,11 @@ func postBank(bank Bank) (int, error) {
 	buf := new(bytes.Buffer)
 	err := json.NewEncoder(buf).Encode(bank)
 	if err != nil {
-		return -1, err
+		return 0, err
 	}
 	r, err := http.Post(baseURL, "text/plain", buf)
 	if err != nil {
-		return -1, err
+		return 0, err
 	}
 	var id int
 	json.NewDecoder(r.Body).Decode(&id)

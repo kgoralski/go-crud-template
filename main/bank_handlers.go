@@ -29,7 +29,7 @@ func getBanksHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(banks)
 }
 
-func getBankbyIDHandler(w http.ResponseWriter, r *http.Request) {
+func getBankByIDHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	id, err := strconv.Atoi(vars["id"])

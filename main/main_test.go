@@ -1,19 +1,21 @@
 package main
 
-import "log"
+import (
+	"testing"
+)
 
 func init() {
 	go startServer()
 	deleteAllBanks()
 }
 
-func logFatalOnTest(err error) {
+func logFatalOnTest(t *testing.T, err error) {
 	if err != nil {
 		switch e := err.(type) {
 		case *httpError:
-			log.Fatal(e)
+			t.Fatal(e)
 		default:
-			log.Fatal(err)
+			t.Fatal(err)
 		}
 	}
 }
