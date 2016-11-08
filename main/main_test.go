@@ -6,7 +6,7 @@ import (
 
 func init() {
 	go startServer()
-	deleteAllBanks()
+	deleteBanks()
 }
 
 func logFatalOnTest(t *testing.T, err error) {

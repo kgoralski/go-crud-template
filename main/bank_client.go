@@ -15,7 +15,9 @@ func getAllBanks() ([]Bank, error) {
 		return nil, err
 	}
 	var banks []Bank
-	json.NewDecoder(resp.Body).Decode(&banks)
+	if err := json.NewDecoder(resp.Body).Decode(&banks); err != nil {
+		return nil, err
+	}
 	defer resp.Body.Close()
 	return banks, nil
 }
@@ -26,15 +28,16 @@ func getOneBank(id int) (*Bank, error) {
 		return nil, err
 	}
 	var bank Bank
-	json.NewDecoder(resp.Body).Decode(&bank)
+	if err := json.NewDecoder(resp.Body).Decode(&bank); err != nil {
+		return nil, err
+	}
 	defer resp.Body.Close()
 	return &bank, nil
 }
 
 func postBank(bank Bank) (int, error) {
 	buf := new(bytes.Buffer)
-	err := json.NewEncoder(buf).Encode(bank)
-	if err != nil {
+	if err := json.NewEncoder(buf).Encode(bank); err != nil {
 		return 0, err
 	}
 	r, err := http.Post(baseURL, "text/plain", buf)
@@ -42,8 +45,9 @@ func postBank(bank Bank) (int, error) {
 		return 0, err
 	}
 	var id int
-	json.NewDecoder(r.Body).Decode(&id)
-
+	if err := json.NewDecoder(r.Body).Decode(&id); err != nil {
+		return 0, err
+	}
 	return id, nil
 }
 
@@ -65,10 +69,8 @@ func deleteBanks() error {
 	if err != nil {
 		return err
 	}
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
+	if _, err := http.DefaultClient.Do(req); err != nil {
 		return err
 	}
-	defer resp.Body.Close()
 	return nil
 }
