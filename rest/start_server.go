@@ -1,11 +1,13 @@
 package rest
 
 import (
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
+// StartServer starts server with REST handlers
 func StartServer() {
 	r := mux.NewRouter()
 	r.HandleFunc("/rest/banks/", commonHeaders(getBanksHandler)).Methods("GET")
@@ -16,4 +18,3 @@ func StartServer() {
 	r.HandleFunc("/rest/banks/", commonHeaders(deleteAllBanksHandler)).Methods("DELETE")
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
-

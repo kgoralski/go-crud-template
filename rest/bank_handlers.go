@@ -2,10 +2,11 @@ package rest
 
 import (
 	"encoding/json"
-	"github.com/kgoralski/go-crud-template/dao"
-	e "github.com/kgoralski/go-crud-template/handleErr"
 	"net/http"
 	"strconv"
+
+	"github.com/kgoralski/go-crud-template/dao"
+	e "github.com/kgoralski/go-crud-template/handleErr"
 
 	"github.com/gorilla/mux"
 )
@@ -15,14 +16,13 @@ const (
 	applicationJSON = "application/json"
 )
 
-
 func connectDB(w http.ResponseWriter) *dao.BankAPI {
 	db, err := dao.NewBankAPI()
 	if err != nil {
 		e.HandleErrors(w, err)
-		return nil
 	}
 	return db
+
 }
 
 func commonHeaders(fn http.HandlerFunc) http.HandlerFunc {
@@ -48,7 +48,7 @@ func getBankByIDHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		e.HandleErrors(w, &e.HTTPError{err, http.StatusText(http.StatusBadRequest), http.StatusBadRequest})
+		e.HandleErrors(w, &e.HTTPError{Err: err, Message: http.StatusText(http.StatusBadRequest), Code: 400})
 		return
 	}
 	b, err := dao.GetBankByID(id, connectDB(w))
@@ -84,7 +84,7 @@ func deleteBankByIDHandler(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		e.HandleErrors(w, &e.HTTPError{err, http.StatusText(http.StatusBadRequest), http.StatusBadRequest})
+		e.HandleErrors(w, &e.HTTPError{Err: err, Message: http.StatusText(http.StatusBadRequest), Code: 400})
 		return
 	}
 
@@ -99,7 +99,7 @@ func updateBankHanlder(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		e.HandleErrors(w, &e.HTTPError{err, http.StatusText(http.StatusBadRequest), http.StatusBadRequest})
+		e.HandleErrors(w, &e.HTTPError{Err: err, Message: http.StatusText(http.StatusBadRequest), Code: 400})
 		return
 	}
 	var bank dao.Bank
@@ -107,7 +107,7 @@ func updateBankHanlder(w http.ResponseWriter, r *http.Request) {
 		e.HandleErrors(w, err)
 		return
 	}
-	updatedBank, err := dao.UpdateBank(dao.Bank{id, bank.Name}, connectDB(w))
+	updatedBank, err := dao.UpdateBank(dao.Bank{ID: id, Name: bank.Name}, connectDB(w))
 	if err != nil {
 		e.HandleErrors(w, err)
 		return

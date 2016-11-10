@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/kgoralski/go-crud-template/handleErr"
-	"github.com/stretchr/testify/assert"
 	"github.com/kgoralski/go-crud-template/rest"
+	"github.com/stretchr/testify/assert"
 )
 
 func init() {

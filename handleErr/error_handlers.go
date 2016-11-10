@@ -44,6 +44,7 @@ func HandleErrors(w http.ResponseWriter, err error) {
 			http.Error(w, DbQueryFail, http.StatusConflict)
 		case DbConnectionFail:
 			http.Error(w, DbConnectionFail, http.StatusServiceUnavailable)
+			return
 		case DbNotSupported:
 			http.Error(w, DbNotSupported, http.StatusConflict)
 		case EntityNotExist:
