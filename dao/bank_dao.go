@@ -10,10 +10,6 @@ import (
 
 const sqlConnection = "admin:Admin.123@tcp(localhost:3306)/bank_db?charset=utf8"
 
-type DBAccess interface {
-	GetBanks()
-}
-
 type Bank struct {
 	ID   int    `json:"id" db:"id"`
 	Name string `json:"name" db:"name"`
