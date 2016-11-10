@@ -61,11 +61,9 @@ func deleteBank(id int) error {
 	if err != nil {
 		return err
 	}
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
+	if _, err := http.DefaultClient.Do(req); err != nil {
 		return err
 	}
-	defer resp.Body.Close()
 	return nil
 }
 
