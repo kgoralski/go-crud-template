@@ -1,4 +1,4 @@
-package main
+package rest
 
 import (
 	"log"
@@ -7,11 +7,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func main() {
-	startServer()
-}
-
-func startServer() {
+// StartServer starts server with REST handlers
+func StartServer() {
 	r := mux.NewRouter()
 	r.HandleFunc("/rest/banks/", commonHeaders(getBanksHandler)).Methods("GET")
 	r.HandleFunc("/rest/banks/{id:[0-9]+}", commonHeaders(getBankByIDHandler)).Methods("GET")

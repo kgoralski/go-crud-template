@@ -1,10 +1,17 @@
-package main
+package client
 
 import (
 	"testing"
 
+	"github.com/kgoralski/go-crud-template/handleErr"
+	"github.com/kgoralski/go-crud-template/rest"
 	"github.com/stretchr/testify/assert"
 )
+
+func init() {
+	go rest.StartServer()
+	deleteBanks()
+}
 
 const (
 	bzwbk     = "BZWBK"
@@ -14,10 +21,23 @@ const (
 	ing       = "ING"
 )
 
+func logFatalOnTest(t *testing.T, err error) {
+	if err != nil {
+		switch e := err.(type) {
+		case *handleErr.HTTPError:
+			t.Fatal(e)
+		case *handleErr.DbError:
+			t.Fatal(e)
+		default:
+			t.Fatal(err)
+		}
+	}
+}
+
 func TestGetBanksClient(t *testing.T) {
 	deleteBanks()
-	postBank(Bank{Name: bzwbk})
-	postBank(Bank{Name: mbank})
+	postBank(bank{Name: bzwbk})
+	postBank(bank{Name: mbank})
 	banks, err := getAllBanks()
 	logFatalOnTest(t, err)
 	assert.Len(t, banks, 2, "Expected size is 2")
@@ -25,7 +45,7 @@ func TestGetBanksClient(t *testing.T) {
 }
 
 func TestGetOneBankClient(t *testing.T) {
-	id, err := postBank(Bank{Name: santander})
+	id, err := postBank(bank{Name: santander})
 	logFatalOnTest(t, err)
 	bank, errQuery := getOneBank(id)
 	logFatalOnTest(t, errQuery)
@@ -34,7 +54,7 @@ func TestGetOneBankClient(t *testing.T) {
 }
 
 func TestCreateBankClient(t *testing.T) {
-	bank := Bank{Name: alior}
+	bank := bank{Name: alior}
 	id, err := postBank(bank)
 	logFatalOnTest(t, err)
 
@@ -45,7 +65,7 @@ func TestCreateBankClient(t *testing.T) {
 }
 
 func TestDeleteSingleBankClient(t *testing.T) {
-	id, err := postBank(Bank{Name: ing})
+	id, err := postBank(bank{Name: ing})
 	logFatalOnTest(t, err)
 	deleteBank(id)
 	banks, errQuery := getAllBanks()
@@ -58,9 +78,9 @@ func TestDeleteSingleBankClient(t *testing.T) {
 
 func TestDeleteAllBankClient(t *testing.T) {
 	deleteBanks()
-	postBank(Bank{Name: bzwbk})
-	postBank(Bank{Name: mbank})
-	postBank(Bank{Name: alior})
+	postBank(bank{Name: bzwbk})
+	postBank(bank{Name: mbank})
+	postBank(bank{Name: alior})
 	deleteBanks()
 	banks, err := getAllBanks()
 	logFatalOnTest(t, err)
