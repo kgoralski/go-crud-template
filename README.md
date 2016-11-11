@@ -23,7 +23,7 @@ Docker version 1.12.3:
  
 Hints:
  - My $GOPATH=$HOME/work
- - Project dir: /home/users/kgoralski/work/src/github.com/kgoralski/go-crud-template/main
+ - Project dir: /home/users/kgoralski/work/src/github.com/kgoralski/go-crud-template
 
 ---
 Many thanks to [@wendigo](https://github.com/wendigo) for a Code Review!
