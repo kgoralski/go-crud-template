@@ -33,7 +33,7 @@ func NewBankAPI() (*BankAPI, error) {
 	return &BankAPI{db: db}, nil
 }
 
-// GetBanks returns all banks in database
+// GetBanks returns all banks from database
 func GetBanks(b *BankAPI) ([]Bank, error) {
 	var banks = []Bank{}
 	if err := b.db.Select(&banks, "SELECT * FROM banks"); err != nil {
