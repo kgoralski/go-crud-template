@@ -13,6 +13,8 @@ const (
 	santander = "SANTANDER"
 )
 
+var db, dbErr = NewBankAPI()
+
 func logFatalOnTest(t *testing.T, err error) {
 	if err != nil {
 		switch e := err.(type) {
@@ -27,9 +29,7 @@ func logFatalOnTest(t *testing.T, err error) {
 }
 
 func TestGetBanks(t *testing.T) {
-	db, err := NewBankAPI()
-	logFatalOnTest(t, err)
-
+	logFatalOnTest(t, dbErr)
 	DeleteAllBanks(db)
 	CreateBank(Bank{Name: bzwbk}, db)
 	CreateBank(Bank{Name: mbank}, db)
@@ -40,18 +40,14 @@ func TestGetBanks(t *testing.T) {
 }
 
 func TestCreateBank(t *testing.T) {
-	db, err := NewBankAPI()
-	logFatalOnTest(t, err)
-
+	logFatalOnTest(t, dbErr)
 	id, err := CreateBank(Bank{Name: mbank}, db)
 	logFatalOnTest(t, err)
 	assert.NotZero(t, id)
 }
 
 func TestDeleteAllBanks(t *testing.T) {
-	db, err := NewBankAPI()
-	logFatalOnTest(t, err)
-
+	logFatalOnTest(t, dbErr)
 	CreateBank(Bank{Name: bzwbk}, db)
 	CreateBank(Bank{Name: mbank}, db)
 	DeleteAllBanks(db)
@@ -61,9 +57,7 @@ func TestDeleteAllBanks(t *testing.T) {
 }
 
 func TestGetBankById(t *testing.T) {
-	db, err := NewBankAPI()
-	logFatalOnTest(t, err)
-
+	logFatalOnTest(t, dbErr)
 	id, err := CreateBank(Bank{Name: santander}, db)
 	logFatalOnTest(t, err)
 	bank, err := GetBankByID(int(id), db)
@@ -73,9 +67,7 @@ func TestGetBankById(t *testing.T) {
 }
 
 func TestDeleteBankById(t *testing.T) {
-	db, err := NewBankAPI()
-	logFatalOnTest(t, err)
-
+	logFatalOnTest(t, dbErr)
 	id, err := CreateBank(Bank{Name: mbank}, db)
 	logFatalOnTest(t, err)
 
@@ -87,8 +79,7 @@ func TestDeleteBankById(t *testing.T) {
 }
 
 func TestUpdateBank(t *testing.T) {
-	db, err := NewBankAPI()
-	logFatalOnTest(t, err)
+	logFatalOnTest(t, dbErr)
 	id, err := CreateBank(Bank{Name: mbank}, db)
 	logFatalOnTest(t, err)
 	bank, err := UpdateBank(Bank{ID: int(id), Name: bzwbk}, db)

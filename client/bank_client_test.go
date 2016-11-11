@@ -34,8 +34,18 @@ func logFatalOnTest(t *testing.T, err error) {
 	}
 }
 
-func TestGetBanksClient(t *testing.T) {
+func TestDeleteAllBankClient(t *testing.T) {
+	postBank(bank{Name: bzwbk})
+	postBank(bank{Name: mbank})
+	postBank(bank{Name: alior})
 	deleteBanks()
+	banks, err := getAllBanks()
+	logFatalOnTest(t, err)
+
+	assert.Empty(t, banks)
+}
+
+func TestGetBanksClient(t *testing.T) {
 	postBank(bank{Name: bzwbk})
 	postBank(bank{Name: mbank})
 	banks, err := getAllBanks()
@@ -74,16 +84,4 @@ func TestDeleteSingleBankClient(t *testing.T) {
 	for _, bank := range banks {
 		assert.NotEqual(t, ing, bank)
 	}
-}
-
-func TestDeleteAllBankClient(t *testing.T) {
-	deleteBanks()
-	postBank(bank{Name: bzwbk})
-	postBank(bank{Name: mbank})
-	postBank(bank{Name: alior})
-	deleteBanks()
-	banks, err := getAllBanks()
-	logFatalOnTest(t, err)
-
-	assert.Empty(t, banks)
 }
