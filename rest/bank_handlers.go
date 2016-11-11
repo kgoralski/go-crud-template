@@ -16,15 +16,6 @@ const (
 	applicationJSON = "application/json"
 )
 
-func connectDB(w http.ResponseWriter) *dao.BankAPI {
-	db, err := dao.NewBankAPI()
-	if err != nil {
-		e.HandleErrors(w, err)
-	}
-	return db
-
-}
-
 func commonHeaders(fn http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set(contentType, applicationJSON)
@@ -33,7 +24,12 @@ func commonHeaders(fn http.HandlerFunc) http.HandlerFunc {
 }
 
 func getBanksHandler(w http.ResponseWriter, r *http.Request) {
-	banks, err := dao.GetBanks(connectDB(w))
+	db, err := dao.NewBankAPI()
+	if err != nil {
+		e.HandleErrors(w, &e.DbError{Err: err, Message: e.DbConnectionFail})
+		return
+	}
+	banks, err := dao.GetBanks(db)
 	if err != nil {
 		e.HandleErrors(w, err)
 		return
@@ -51,7 +47,12 @@ func getBankByIDHandler(w http.ResponseWriter, r *http.Request) {
 		e.HandleErrors(w, &e.HTTPError{Err: err, Message: http.StatusText(http.StatusBadRequest), Code: 400})
 		return
 	}
-	b, err := dao.GetBankByID(id, connectDB(w))
+	db, err := dao.NewBankAPI()
+	if err != nil {
+		e.HandleErrors(w, &e.DbError{Err: err, Message: e.DbConnectionFail})
+		return
+	}
+	b, err := dao.GetBankByID(id, db)
 	if err != nil {
 		e.HandleErrors(w, err)
 		return
@@ -68,7 +69,12 @@ func createBankHanlder(w http.ResponseWriter, r *http.Request) {
 		e.HandleErrors(w, err)
 		return
 	}
-	id, err := dao.CreateBank(bank, connectDB(w))
+	db, err := dao.NewBankAPI()
+	if err != nil {
+		e.HandleErrors(w, &e.DbError{Err: err, Message: e.DbConnectionFail})
+		return
+	}
+	id, err := dao.CreateBank(bank, db)
 	if err != nil {
 		e.HandleErrors(w, err)
 		return
@@ -88,7 +94,12 @@ func deleteBankByIDHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err = dao.DeleteBankByID(id, connectDB(w)); err != nil {
+	db, err := dao.NewBankAPI()
+	if err != nil {
+		e.HandleErrors(w, &e.DbError{Err: err, Message: e.DbConnectionFail})
+		return
+	}
+	if err = dao.DeleteBankByID(id, db); err != nil {
 		e.HandleErrors(w, err)
 		return
 	}
@@ -107,7 +118,12 @@ func updateBankHanlder(w http.ResponseWriter, r *http.Request) {
 		e.HandleErrors(w, err)
 		return
 	}
-	updatedBank, err := dao.UpdateBank(dao.Bank{ID: id, Name: bank.Name}, connectDB(w))
+	db, err := dao.NewBankAPI()
+	if err != nil {
+		e.HandleErrors(w, &e.DbError{Err: err, Message: e.DbConnectionFail})
+		return
+	}
+	updatedBank, err := dao.UpdateBank(dao.Bank{ID: id, Name: bank.Name}, db)
 	if err != nil {
 		e.HandleErrors(w, err)
 		return
@@ -119,7 +135,12 @@ func updateBankHanlder(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteAllBanksHandler(w http.ResponseWriter, r *http.Request) {
-	if err := dao.DeleteAllBanks(connectDB(w)); err != nil {
+	db, err := dao.NewBankAPI()
+	if err != nil {
+		e.HandleErrors(w, &e.DbError{Err: err, Message: e.DbConnectionFail})
+		return
+	}
+	if err := dao.DeleteAllBanks(db); err != nil {
 		e.HandleErrors(w, err)
 		return
 	}
