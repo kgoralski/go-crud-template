@@ -4,9 +4,10 @@ Hope that I will improve it soon :)
 go-crud-template
 
  - go 1.7,
- - gorilla mux for Routing,
+ - gorilla mux for routing,
  - sqlx for database access (mysql),
  - tests using testify library
+ - pkg/errors for better error handling
 
 urls:
  - GET http://localhost:8080/rest/banks/
