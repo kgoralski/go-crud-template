@@ -1,0 +1,26 @@
+version: '2'
+services:
+
+  go-app-db:
+    container_name: go-app-db
+    image: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_USER=root
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+      - MYSQL_RANDOM_ROOT_PASSWORD=no
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+
+  go-app:
+    container_name: go-app
+    build:
+      context: ./../
+      dockerfile: ./scripts/Dockerfile
+    image: golang:go-app
+    links:
+      - go-app-db:go-app-db
+    ports:
+      - "8080:8080"
