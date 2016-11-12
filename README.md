@@ -24,7 +24,23 @@ urls:
 
 ### Docker
 
-If you want to setup docker environemnt just use `./scripts/docker-compose.yml` with [docker-compose](https://docs.docker.com/compose/)
+If you want to setup docker environemnt just use `./scripts/docker-compose.yml` with [docker-compose](https://docs.docker.com/compose/).
+
+Go to `./scripts` direcotry and execute
+
+```
+# start docker environment
+$ docker-compose up -d
+
+# list running services
+$ docker-compose ps
+
+# stop all containers
+$ docker-compose stop
+
+# remove all containers
+$ docker-compose rm
+```
  
 ## Hints
 
