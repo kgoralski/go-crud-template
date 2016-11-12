@@ -1,12 +1,18 @@
-This code is written with very little experience with Golang. I did my best. CRs and PRs always welcome :)
+# GO crud template 
 
-go-crud-template
+## About
+This code is written with very little experience with Golang. I did my best. CRs and PRs always welcome :)
 
  - go 1.7,
  - gorilla mux for routing,
  - sqlx for database access (mysql),
  - tests using testify library
  - pkg/errors for better error handling
+ - dockerized environment
+
+## Usage
+
+### API
 
 urls:
  - GET http://localhost:8080/rest/banks/
@@ -16,12 +22,12 @@ urls:
  - DELETE http://localhost:8080/rest/banks/1
  - DELETE http://localhost:8080/rest/banks/
 
-Docker version 1.12.3:
- - Build  $docker build -t golang:go-app .
- - With mysqldb on host $docker run --name go-crud --network=host -it -d -p 8080:8080 golang:go-app
- - Should also work with mysql inside docker $docker run -d -p 3306:3306 --name mysql-db -e MYSQL_ROOT_PASSWORD=admin -d mysql:5.7
+### Docker
+
+If you want to setup docker environemnt just use `./scripts/docker-compose.yml` with ![docker-compose](https://docs.docker.com/compose/)
  
-Hints:
+## Hints
+
  - My $GOPATH=$HOME/go
  - Project dir: /home/users/kgoralski/go/src/github.com/kgoralski/go-crud-template
 
