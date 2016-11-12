@@ -24,7 +24,7 @@ func commonHeaders(fn http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func GetBanksHandler(w http.ResponseWriter, r *http.Request) {
+func getBanksHandler(w http.ResponseWriter, r *http.Request) {
 	banks, err := dao.GetBanks()
 	if err != nil {
 		e.HandleErrors(w, err)
