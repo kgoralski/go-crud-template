@@ -15,7 +15,7 @@ func StartServer() {
 	if err != nil {
 		log.Fatal(fmt.Errorf("FATAL: %+v\n", err))
 	}
-	dao.DBaccess = db
+	dao.DBAccess = db
 
 	r := mux.NewRouter()
 	r.HandleFunc("/rest/banks/", commonHeaders(GetBanksHandler)).Methods("GET")
