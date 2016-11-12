@@ -20,7 +20,7 @@ const (
 
 func init() {
 	go rest.StartServer()
-	time.Sleep(time.Millisecond * 1)
+	time.Sleep(time.Millisecond * 5)
 }
 
 func logFatalOnTest(t *testing.T, err error) {
