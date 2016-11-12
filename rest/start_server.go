@@ -4,13 +4,21 @@ import (
 	"log"
 	"net/http"
 
+	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/kgoralski/go-crud-template/dao"
 )
 
-// StartServer starts server with REST handlers
+// StartServer starts server with REST handlers and initialise db connection pool
 func StartServer() {
+	db, err := dao.NewBankAPI()
+	if err != nil {
+		log.Fatal(fmt.Errorf("FATAL: %+v\n", err))
+	}
+	dao.DBaccess = db
+
 	r := mux.NewRouter()
-	r.HandleFunc("/rest/banks/", commonHeaders(getBanksHandler)).Methods("GET")
+	r.HandleFunc("/rest/banks/", commonHeaders(GetBanksHandler)).Methods("GET")
 	r.HandleFunc("/rest/banks/{id:[0-9]+}", commonHeaders(getBankByIDHandler)).Methods("GET")
 	r.HandleFunc("/rest/banks/", commonHeaders(createBankHanlder)).Methods("POST")
 	r.HandleFunc("/rest/banks/{id:[0-9]+}", commonHeaders(deleteBankByIDHandler)).Methods("DELETE")
