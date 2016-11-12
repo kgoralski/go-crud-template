@@ -9,14 +9,13 @@ import (
 	e "github.com/kgoralski/go-crud-template/handleErr"
 
 	"github.com/gorilla/mux"
+	"github.com/pkg/errors"
 )
 
 const (
 	contentType     = "Content-Type"
 	applicationJSON = "application/json"
 )
-
-var daoAccess, dbErr = dao.NewBankAPI()
 
 func commonHeaders(fn http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -25,12 +24,8 @@ func commonHeaders(fn http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func getBanksHandler(w http.ResponseWriter, r *http.Request) {
-	if dbErr != nil {
-		e.HandleErrors(w, dbErr)
-		return
-	}
-	banks, err := dao.GetBanks(daoAccess)
+func GetBanksHandler(w http.ResponseWriter, r *http.Request) {
+	banks, err := dao.GetBanks()
 	if err != nil {
 		e.HandleErrors(w, err)
 		return
@@ -42,17 +37,13 @@ func getBanksHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getBankByIDHandler(w http.ResponseWriter, r *http.Request) {
-	if dbErr != nil {
-		e.HandleErrors(w, dbErr)
-		return
-	}
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		e.HandleErrors(w, &e.HTTPError{Err: err, Message: http.StatusText(http.StatusBadRequest), Code: 400})
+		e.HandleErrors(w, errors.Wrap(err, http.StatusText(http.StatusBadRequest)))
 		return
 	}
-	b, err := dao.GetBankByID(id, daoAccess)
+	b, err := dao.GetBankByID(id)
 	if err != nil {
 		e.HandleErrors(w, err)
 		return
@@ -64,16 +55,12 @@ func getBankByIDHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func createBankHanlder(w http.ResponseWriter, r *http.Request) {
-	if dbErr != nil {
-		e.HandleErrors(w, dbErr)
-		return
-	}
 	var bank dao.Bank
 	if err := json.NewDecoder(r.Body).Decode(&bank); err != nil {
 		e.HandleErrors(w, err)
 		return
 	}
-	id, err := dao.CreateBank(bank, daoAccess)
+	id, err := dao.CreateBank(bank)
 	if err != nil {
 		e.HandleErrors(w, err)
 		return
@@ -85,33 +72,25 @@ func createBankHanlder(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteBankByIDHandler(w http.ResponseWriter, r *http.Request) {
-	if dbErr != nil {
-		e.HandleErrors(w, dbErr)
-		return
-	}
 	vars := mux.Vars(r)
 
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		e.HandleErrors(w, &e.HTTPError{Err: err, Message: http.StatusText(http.StatusBadRequest), Code: 400})
+		e.HandleErrors(w, errors.Wrap(err, http.StatusText(http.StatusBadRequest)))
 		return
 	}
 
-	if err = dao.DeleteBankByID(id, daoAccess); err != nil {
+	if err = dao.DeleteBankByID(id); err != nil {
 		e.HandleErrors(w, err)
 		return
 	}
 }
 
 func updateBankHanlder(w http.ResponseWriter, r *http.Request) {
-	if dbErr != nil {
-		e.HandleErrors(w, dbErr)
-		return
-	}
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		e.HandleErrors(w, &e.HTTPError{Err: err, Message: http.StatusText(http.StatusBadRequest), Code: 400})
+		e.HandleErrors(w, errors.Wrap(err, http.StatusText(http.StatusBadRequest)))
 		return
 	}
 	var bank dao.Bank
@@ -119,7 +98,7 @@ func updateBankHanlder(w http.ResponseWriter, r *http.Request) {
 		e.HandleErrors(w, err)
 		return
 	}
-	updatedBank, err := dao.UpdateBank(dao.Bank{ID: id, Name: bank.Name}, daoAccess)
+	updatedBank, err := dao.UpdateBank(dao.Bank{ID: id, Name: bank.Name})
 	if err != nil {
 		e.HandleErrors(w, err)
 		return
@@ -131,11 +110,7 @@ func updateBankHanlder(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteAllBanksHandler(w http.ResponseWriter, r *http.Request) {
-	if dbErr != nil {
-		e.HandleErrors(w, dbErr)
-		return
-	}
-	if err := dao.DeleteAllBanks(daoAccess); err != nil {
+	if err := dao.DeleteAllBanks(); err != nil {
 		e.HandleErrors(w, err)
 		return
 	}

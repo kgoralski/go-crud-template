@@ -1,17 +1,14 @@
 package client
 
 import (
+	"fmt"
+	"log"
 	"testing"
+	"time"
 
-	"github.com/kgoralski/go-crud-template/handleErr"
 	"github.com/kgoralski/go-crud-template/rest"
 	"github.com/stretchr/testify/assert"
 )
-
-func init() {
-	go rest.StartServer()
-	deleteBanks()
-}
 
 const (
 	bzwbk     = "BZWBK"
@@ -21,16 +18,15 @@ const (
 	ing       = "ING"
 )
 
+func init() {
+	go rest.StartServer()
+	time.Sleep(time.Millisecond * 1)
+}
+
 func logFatalOnTest(t *testing.T, err error) {
 	if err != nil {
-		switch e := err.(type) {
-		case *handleErr.HTTPError:
-			t.Fatal(e)
-		case *handleErr.DbError:
-			t.Fatal(e)
-		default:
-			t.Fatal(err)
-		}
+		log.Fatal(fmt.Errorf("FATAL: %+v\n", err))
+		t.Fatal(err)
 	}
 }
 
