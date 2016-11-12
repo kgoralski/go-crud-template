@@ -24,7 +24,7 @@ urls:
 
 ### Docker
 
-If you want to setup docker environemnt just use `./scripts/docker-compose.yml` with ![docker-compose](https://docs.docker.com/compose/)
+If you want to setup docker environemnt just use `./scripts/docker-compose.yml` with [docker-compose](https://docs.docker.com/compose/)
  
 ## Hints
 
