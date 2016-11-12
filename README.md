@@ -22,8 +22,8 @@ Docker version 1.12.3:
  - Should also work with mysql inside docker $docker run -d -p 3306:3306 --name mysql-db -e MYSQL_ROOT_PASSWORD=admin -d mysql:5.7
  
 Hints:
- - My $GOPATH=$HOME/work
- - Project dir: /home/users/kgoralski/work/src/github.com/kgoralski/go-crud-template
+ - My $GOPATH=$HOME/go
+ - Project dir: /home/users/kgoralski/go/src/github.com/kgoralski/go-crud-template
 
 ---
 Many thanks to [@wendigo](https://github.com/wendigo) for a Code Review!
