@@ -12,7 +12,8 @@ const (
 	mysql         = "mysql"
 )
 
-var DBaccess *BankAPI
+// DBAccess initialised on startup
+var DBAccess *BankAPI
 
 // Bank db entity shared in app for simplicity
 type Bank struct {
@@ -37,7 +38,7 @@ func NewBankAPI() (*BankAPI, error) {
 // GetBanks returns all banks from database
 func GetBanks() ([]Bank, error) {
 	var banks = []Bank{}
-	if err := DBaccess.db.Select(&banks, "SELECT * FROM banks"); err != nil {
+	if err := DBAccess.db.Select(&banks, "SELECT * FROM banks"); err != nil {
 		return nil, errors.Wrap(err, e.DbQueryFail)
 	}
 	return banks, nil
@@ -46,7 +47,7 @@ func GetBanks() ([]Bank, error) {
 // GetBankByID returns single bank by ID
 func GetBankByID(id int) (*Bank, error) {
 	var bank = Bank{}
-	if err := DBaccess.db.Get(&bank, "SELECT * FROM banks WHERE id=?", id); err != nil {
+	if err := DBAccess.db.Get(&bank, "SELECT * FROM banks WHERE id=?", id); err != nil {
 		return nil, errors.Wrap(err, e.DbQueryFail)
 	}
 	return &bank, nil
@@ -54,7 +55,7 @@ func GetBankByID(id int) (*Bank, error) {
 
 // CreateBank is creating single bank inside database
 func CreateBank(bank Bank) (int, error) {
-	result, err := DBaccess.db.Exec("INSERT into banks (name) VALUES (?)", bank.Name)
+	result, err := DBAccess.db.Exec("INSERT into banks (name) VALUES (?)", bank.Name)
 	if err != nil {
 		return 0, errors.Wrap(err, e.DbQueryFail)
 	}
@@ -67,7 +68,7 @@ func CreateBank(bank Bank) (int, error) {
 
 // DeleteAllBanks deletes all banks inside database
 func DeleteAllBanks() error {
-	if _, err := DBaccess.db.Exec("TRUNCATE table banks"); err != nil {
+	if _, err := DBAccess.db.Exec("TRUNCATE table banks"); err != nil {
 		return errors.Wrap(err, e.DbQueryFail)
 	}
 	return nil
@@ -75,7 +76,7 @@ func DeleteAllBanks() error {
 
 // DeleteBankByID deletes single bank by ID
 func DeleteBankByID(id int) error {
-	res, err := DBaccess.db.Exec("DELETE from banks where id=?", id)
+	res, err := DBAccess.db.Exec("DELETE from banks where id=?", id)
 	if err != nil {
 		return errors.Wrap(err, e.DbQueryFail)
 	}
@@ -91,7 +92,7 @@ func DeleteBankByID(id int) error {
 
 // UpdateBank updates single bank in database
 func UpdateBank(bank Bank) (*Bank, error) {
-	res, err := DBaccess.db.Exec("UPDATE banks SET name=? WHERE id=?", bank.Name, bank.ID)
+	res, err := DBAccess.db.Exec("UPDATE banks SET name=? WHERE id=?", bank.Name, bank.ID)
 	if err != nil {
 		return nil, errors.Wrap(err, e.DbQueryFail)
 	}

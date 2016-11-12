@@ -26,7 +26,7 @@ func init() {
 	if err != nil {
 		log.Fatal(fmt.Errorf("FATAL: %+v\n", err))
 	}
-	DBaccess = db
+	DBAccess = db
 	DeleteAllBanks()
 }
 
