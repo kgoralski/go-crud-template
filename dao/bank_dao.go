@@ -30,7 +30,7 @@ type BankAPI struct {
 func NewBankAPI() (*BankAPI, error) {
 	db, err := sqlx.Connect(mysql, sqlConnection)
 	if err != nil {
-		return nil, errors.Wrap(err, e.DbConnectionFail)
+		return nil, errors.Wrap(err, err.Error())
 	}
 	return &BankAPI{db: db}, nil
 }
