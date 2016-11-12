@@ -10,7 +10,6 @@ import (
 
 	"github.com/kgoralski/go-crud-template/rest"
 	"github.com/stretchr/testify/assert"
-	"sync"
 )
 
 const (
