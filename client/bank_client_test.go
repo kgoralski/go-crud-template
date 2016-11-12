@@ -1,11 +1,9 @@
 package client
 
 import (
-	"testing"
-
 	"fmt"
 	"log"
-
+	"testing"
 	"time"
 
 	"github.com/kgoralski/go-crud-template/rest"
