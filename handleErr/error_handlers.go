@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 )
 
 const (
@@ -15,11 +16,13 @@ const (
 
 func HandleErrors(w http.ResponseWriter, err error) {
 	log.Print(fmt.Errorf("FATAL: %+v\n", err))
+	if strings.Contains(err.Error(), "connection refused") {
+		http.Error(w, DbConnectionFail, http.StatusServiceUnavailable)
+		return
+	}
 	switch err.Error() {
 	case DbQueryFail:
 		http.Error(w, err.Error(), http.StatusConflict)
-	case DbConnectionFail:
-		http.Error(w, err.Error(), http.StatusServiceUnavailable)
 	case DbNotSupported:
 		http.Error(w, err.Error(), http.StatusConflict)
 	case EntityNotExist:
