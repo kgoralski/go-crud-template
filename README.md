@@ -1,5 +1,4 @@
-This code is written with very little experience with Golang. 
-Hope that I will improve it soon :)
+This code is written with very little experience with Golang. I did my best :)
 
 go-crud-template
 
