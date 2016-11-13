@@ -8,10 +8,10 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/kgoralski/go-crud-template/dao"
 )
+var db, err = dao.NewBankAPI()
 
 // StartServer starts server with REST handlers and initialise db connection pool
 func StartServer() {
-	db, err := dao.NewBankAPI()
 	if err != nil {
 		log.Fatal(fmt.Errorf("FATAL: %+v\n", err))
 	}
