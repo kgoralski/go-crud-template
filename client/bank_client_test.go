@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"testing"
-	"time"
 
 	"github.com/kgoralski/go-crud-template/rest"
 	"github.com/stretchr/testify/assert"
@@ -20,7 +19,6 @@ const (
 
 func init() {
 	go rest.StartServer()
-	time.Sleep(time.Millisecond * 5)
 }
 
 func logFatalOnTest(t *testing.T, err error) {
