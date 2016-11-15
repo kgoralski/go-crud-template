@@ -7,7 +7,6 @@ go-crud-template
  - sqlx for database access (mysql),
  - tests using testify library
  - pkg/errors for better error handling
- - spf13/viper for handling config files
 
 urls:
  - GET http://localhost:8080/rest/banks/

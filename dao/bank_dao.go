@@ -7,7 +7,10 @@ import (
 	"github.com/pkg/errors"
 )
 
-const mysql = "mysql"
+const (
+	sqlConnection = "admin:Admin.123@tcp(localhost:3306)/bank_db?charset=utf8"
+	mysql         = "mysql"
+)
 
 // DBAccess initialised on startup
 var DBAccess *BankAPI
@@ -24,7 +27,7 @@ type BankAPI struct {
 }
 
 // NewBankAPI establishing db connection
-func NewBankAPI(sqlConnection string) (*BankAPI, error) {
+func NewBankAPI() (*BankAPI, error) {
 	db, err := sqlx.Connect(mysql, sqlConnection)
 	if err != nil {
 		return nil, errors.Wrap(err, err.Error())

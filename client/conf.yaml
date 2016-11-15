@@ -1,2 +1,0 @@
-# basic config file to manipulate test config, currently the same as prod
-dbURL: admin:Admin.123@tcp(localhost:3306)/bank_db?charset=utf8
