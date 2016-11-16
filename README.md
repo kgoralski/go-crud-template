@@ -1,4 +1,4 @@
-# GO crud template 
+# Golang CRUD Application Scaffold
 
 ## About
 This code is written with very little experience with Golang. I did my best. CRs and PRs always welcome :)
@@ -8,13 +8,13 @@ This code is written with very little experience with Golang. I did my best. CRs
  - sqlx for database access (mysql),
  - tests using testify library
  - pkg/errors for better error handling
+ - spf13/viper for handling config files 
  - dockerized environment
 
 ## Usage
 
 ### API
 
-urls:
  - GET http://localhost:8080/rest/banks/
  - GET http://localhost:8080/rest/banks/1
  - POST http://localhost:8080/rest/banks/ { "name": "BankName" }
@@ -22,11 +22,11 @@ urls:
  - DELETE http://localhost:8080/rest/banks/1
  - DELETE http://localhost:8080/rest/banks/
 
-### Docker
+### docker-compose
 
 If you want to setup docker environemnt just use `./scripts/docker-compose.yml` with [docker-compose](https://docs.docker.com/compose/).
 
-Go to `./scripts` direcotry and execute
+Go to `./scripts` directory and execute
 
 ```
 # start docker environment
@@ -41,6 +41,11 @@ $ docker-compose stop
 # remove all containers
 $ docker-compose rm
 ```
+ 
+### single docker
+ - Build app: &docker build -t golang:go-app .  && $docker run --name go-crud --network=host -it -d -p 8080:8080 golang:go-app
+ - You can run localDB with: $docker run -d -p 3306:3306 --name mysql-db -e MYSQL_ROOT_PASSWORD=admin -d mysql:5.7
+ 
  
 ## Hints
 
