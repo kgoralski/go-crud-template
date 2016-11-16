@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	sqlConnection = "admin:Admin.123@tcp(localhost:3306)/bank_db?charset=utf8"
+	sqlConnection = "admin:Admin.123@tcp(go-app-db:3306)/bank_db?charset=utf8"
 	mysql         = "mysql"
 )
 
