@@ -2,6 +2,7 @@ FROM golang:latest
 
 ADD . /go/src/github.com/kgoralski/go-crud-template
 WORKDIR /go/src/github.com/kgoralski/go-crud-template
+#RUN go get github.com/kgoralski/go-crud-template
 
 RUN apt-get update && \
     apt-get install -y vim && \
