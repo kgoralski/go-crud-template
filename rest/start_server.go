@@ -15,12 +15,12 @@ import (
 )
 
 const (
-	defaultConfigFilePath = "./_conf"
-	configFilePathUsage   = "config file directory. Config file must be named 'conf_{env}.yml'."
+	defaultConfigFilePath  = "./_conf"
+	configFilePathUsage    = "config file directory. Config file must be named 'conf_{env}.yml'."
 	configFilePathFlagName = "configFilePath"
-	envUsage = "environment for app, prod, dev, test"
-	envDefault = "prod"
-	envFlagname = "env"
+	envUsage               = "environment for app, prod, dev, test"
+	envDefault             = "prod"
+	envFlagname            = "env"
 )
 
 var configFilePath string
@@ -48,11 +48,11 @@ func StartServer() {
 
 func configuration(path string, env string) {
 	if isTest, _ := regexp.MatchString("/_test/", os.Args[0]); isTest {
-		env =  "test"
+		env = "test"
 		path = "../_conf"
 	}
 	log.Println("Environment is: " + env + " configFilePath is: " + path)
-	viper.SetConfigName("conf_"+env)
+	viper.SetConfigName("conf_" + env)
 	viper.AddConfigPath(path) // working directory
 	err := viper.ReadInConfig()
 	if err != nil {
