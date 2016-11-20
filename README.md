@@ -30,7 +30,7 @@ Go to `./scripts` directory and execute
 
 ```
 # start docker environment
-$ docker-compose up -d
+$ docker-compose up -d (--build)
 
 # list running services
 $ docker-compose ps
@@ -46,9 +46,11 @@ $ docker-compose rm
  - Build app: &docker build -t golang:go-app .  && $docker run --name go-crud --network=host -it -d -p 8080:8080 golang:go-app
  - You can run localDB with: $docker run -d -p 3306:3306 --name mysql-db -e MYSQL_ROOT_PASSWORD=admin -d mysql:5.7
  
+### Run Locally:
+ - start mysql on 3306 port
+ - start app from IDE or after install with flag -env=dev , ./go-crud-template -env=dev
  
 ## Hints
-
  - My $GOPATH=$HOME/go
  - Project dir: /home/users/kgoralski/go/src/github.com/kgoralski/go-crud-template
 
