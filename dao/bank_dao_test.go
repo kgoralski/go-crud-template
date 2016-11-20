@@ -22,14 +22,18 @@ func logFatalOnTest(t *testing.T, err error) {
 	}
 }
 
-func init() {
-	viper.SetConfigName("conf")
-	viper.AddConfigPath("../client")
+func setupConf() {
+	viper.SetConfigName("conf_test")
+	viper.AddConfigPath("../_conf")
 	err := viper.ReadInConfig()
 	if err != nil {
 		log.Fatal(fmt.Errorf("FATAL: %+v\n", err))
 	}
-	db, err := NewBankAPI(viper.GetString("dbURL"))
+}
+
+func init() {
+	setupConf()
+	db, err := NewBankAPI(viper.GetString("database.URL"))
 	if err != nil {
 		log.Fatal(fmt.Errorf("FATAL: %+v\n", err))
 	}
