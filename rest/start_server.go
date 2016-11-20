@@ -1,17 +1,16 @@
 package rest
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
-
-	"flag"
+	"os"
+	"regexp"
 
 	"github.com/gorilla/mux"
 	"github.com/kgoralski/go-crud-template/dao"
 	"github.com/spf13/viper"
-	"os"
-	"regexp"
 )
 
 const (
