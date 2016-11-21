@@ -47,7 +47,7 @@ $ docker-compose rm
  - You can run localDB with: $docker run -d -p 3306:3306 --name mysql-db -e MYSQL_ROOT_PASSWORD=admin -d mysql:5.7
  
 ### Run Locally:
- - start mysql on 3306 port
+ - start mysql on 3306 port (and execute db script - manually currently)
  - start app from IDE or after install with flag -env=dev , ./go-crud-template -env=dev
  
 ## Hints
