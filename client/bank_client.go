@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"net/http"
 	"github.com/pkg/errors"
+	"net/http"
 )
 
 const baseURL string = "http://localhost:8080/rest/banks/"

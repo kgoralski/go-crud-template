@@ -5,6 +5,7 @@ import (
 	"log"
 	"testing"
 
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -21,8 +22,18 @@ func logFatalOnTest(t *testing.T, err error) {
 	}
 }
 
+func setupConf() {
+	viper.SetConfigName("conf_test")
+	viper.AddConfigPath("../_conf")
+	err := viper.ReadInConfig()
+	if err != nil {
+		log.Fatal(fmt.Errorf("FATAL: %+v\n", err))
+	}
+}
+
 func init() {
-	db, err := NewBankAPI()
+	setupConf()
+	db, err := NewBankAPI(viper.GetString("database.URL"))
 	if err != nil {
 		log.Fatal(fmt.Errorf("FATAL: %+v\n", err))
 	}
