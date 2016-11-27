@@ -49,7 +49,7 @@ $ docker-compose rm
  
 ### Run Locally:
  - start mysql on 3306 port (and execute db script - manually currently)
- - start app from IDE or after install with flag -env=dev , ./go-crud-template -env=dev
+ - start app from IDE or after install with flag -env=dev and giving -configFilePath, ./go-crud-template -env=dev
  
 ## Hints
  - My $GOPATH=$HOME/go
