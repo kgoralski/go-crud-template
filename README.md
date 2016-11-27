@@ -9,6 +9,7 @@ This code is written with very little experience with Golang. I did my best. CRs
  - tests using testify library
  - pkg/errors for better error handling
  - spf13/viper for handling config files 
+ - glide for package management
  - dockerized environment
 
 ## Usage
