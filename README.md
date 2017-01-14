@@ -54,6 +54,7 @@ $ docker-compose rm
 ## Hints
  - My $GOPATH=$HOME/go
  - Project dir: /home/users/kgoralski/go/src/github.com/kgoralski/go-crud-template
+ - Database inside Docker? [Be warned.](http://patrobinson.github.io/2016/11/07/thou-shalt-not-run-a-database-inside-a-container/)
 
 ---
 Many thanks to [@wendigo](https://github.com/wendigo) for a Code Review!
