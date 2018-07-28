@@ -1,4 +1,4 @@
-FROM golang:latest
+FROM golang:1.10.3
 
 ADD . /go/src/github.com/kgoralski/go-crud-template
 WORKDIR /go/src/github.com/kgoralski/go-crud-template
@@ -9,7 +9,8 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN go get ./... && \
+RUN go get -u github.com/golang/dep/cmd/dep && \
+    dep ensure && \
     go install github.com/kgoralski/go-crud-template
 
 ENTRYPOINT scripts/go-app-entrypoint.sh
