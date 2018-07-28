@@ -24,7 +24,7 @@ func commonHeaders(fn http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func getBanksHandler(w http.ResponseWriter, r *http.Request) {
+func getBanksHandler(w http.ResponseWriter, _ *http.Request) {
 	banks, err := dao.GetBanks()
 	if err != nil {
 		e.HandleErrors(w, err)
@@ -109,7 +109,7 @@ func updateBankHanlder(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func deleteAllBanksHandler(w http.ResponseWriter, r *http.Request) {
+func deleteAllBanksHandler(w http.ResponseWriter, _ *http.Request) {
 	if err := dao.DeleteAllBanks(); err != nil {
 		e.HandleErrors(w, err)
 		return

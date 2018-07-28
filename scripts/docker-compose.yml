@@ -3,7 +3,7 @@ services:
 
   go-app-db:
     container_name: go-app-db
-    image: mysql
+    image: mysql:5.7
     ports:
       - "3306:3306"
     environment:
