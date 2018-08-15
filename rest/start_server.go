@@ -8,7 +8,7 @@ import (
 	"os"
 	"regexp"
 
-	"github.com/gorilla/mux"
+	"github.com/go-chi/chi"
 	"github.com/kgoralski/go-crud-template/dao"
 	"github.com/spf13/viper"
 )
@@ -35,13 +35,13 @@ func init() {
 
 // StartServer starts server with REST handlers and initialise db connection pool
 func StartServer() {
-	r := mux.NewRouter()
-	r.HandleFunc("/rest/banks/", commonHeaders(getBanksHandler)).Methods("GET")
-	r.HandleFunc("/rest/banks/{id:[0-9]+}", commonHeaders(getBankByIDHandler)).Methods("GET")
-	r.HandleFunc("/rest/banks/", commonHeaders(createBankHanlder)).Methods("POST")
-	r.HandleFunc("/rest/banks/{id:[0-9]+}", commonHeaders(deleteBankByIDHandler)).Methods("DELETE")
-	r.HandleFunc("/rest/banks/{id:[0-9]+}", commonHeaders(updateBankHanlder)).Methods("PUT")
-	r.HandleFunc("/rest/banks/", commonHeaders(deleteAllBanksHandler)).Methods("DELETE")
+	r := chi.NewRouter()
+	r.Get("/rest/banks/", commonHeaders(getBanksHandler))
+	r.Get("/rest/banks/{id:[0-9]+}", commonHeaders(getBankByIDHandler))
+	r.Post("/rest/banks/", commonHeaders(createBankHanlder))
+	r.Delete("/rest/banks/{id:[0-9]+}", commonHeaders(deleteBankByIDHandler))
+	r.Put("/rest/banks/{id:[0-9]+}", commonHeaders(updateBankHanlder))
+	r.Delete("/rest/banks/", commonHeaders(deleteAllBanksHandler))
 	log.Fatal(http.ListenAndServe(viper.GetString("server.port"), r))
 }
 

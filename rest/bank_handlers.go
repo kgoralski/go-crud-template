@@ -8,7 +8,7 @@ import (
 	"github.com/kgoralski/go-crud-template/dao"
 	e "github.com/kgoralski/go-crud-template/handleErr"
 
-	"github.com/gorilla/mux"
+	"github.com/go-chi/chi"
 	"github.com/pkg/errors"
 )
 
@@ -37,8 +37,7 @@ func getBanksHandler(w http.ResponseWriter, _ *http.Request) {
 }
 
 func getBankByIDHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		e.HandleErrors(w, errors.Wrap(err, http.StatusText(http.StatusBadRequest)))
 		return
@@ -72,9 +71,7 @@ func createBankHanlder(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteBankByIDHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-
-	id, err := strconv.Atoi(vars["id"])
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		e.HandleErrors(w, errors.Wrap(err, http.StatusText(http.StatusBadRequest)))
 		return
@@ -87,8 +84,7 @@ func deleteBankByIDHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateBankHanlder(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		e.HandleErrors(w, errors.Wrap(err, http.StatusText(http.StatusBadRequest)))
 		return
