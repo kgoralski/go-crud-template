@@ -24,7 +24,7 @@ func commonHeaders(fn http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func (s *server) getBanksHandler(w http.ResponseWriter, _ *http.Request) {
+func (s *Server) getBanksHandler(w http.ResponseWriter, _ *http.Request) {
 	banks, err := s.db.GetBanks()
 	if err != nil {
 		e.HandleErrors(w, err)
@@ -36,7 +36,7 @@ func (s *server) getBanksHandler(w http.ResponseWriter, _ *http.Request) {
 	}
 }
 
-func (s *server) getBankByIDHandler(w http.ResponseWriter, r *http.Request) {
+func (s *Server) getBankByIDHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		e.HandleErrors(w, errors.Wrap(err, http.StatusText(http.StatusBadRequest)))
@@ -53,7 +53,7 @@ func (s *server) getBankByIDHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *server) createBankHanlder(w http.ResponseWriter, r *http.Request) {
+func (s *Server) createBankHanlder(w http.ResponseWriter, r *http.Request) {
 	var bank dao.Bank
 	if err := json.NewDecoder(r.Body).Decode(&bank); err != nil {
 		e.HandleErrors(w, err)
@@ -70,7 +70,7 @@ func (s *server) createBankHanlder(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *server) deleteBankByIDHandler(w http.ResponseWriter, r *http.Request) {
+func (s *Server) deleteBankByIDHandler(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		e.HandleErrors(w, errors.Wrap(err, http.StatusText(http.StatusBadRequest)))
@@ -83,7 +83,7 @@ func (s *server) deleteBankByIDHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *server) updateBankHanlder(w http.ResponseWriter, r *http.Request) {
+func (s *Server) updateBankHanlder(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		e.HandleErrors(w, errors.Wrap(err, http.StatusText(http.StatusBadRequest)))
@@ -105,7 +105,7 @@ func (s *server) updateBankHanlder(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *server) deleteAllBanksHandler(w http.ResponseWriter, _ *http.Request) {
+func (s *Server) deleteAllBanksHandler(w http.ResponseWriter, _ *http.Request) {
 	if err := s.db.DeleteAllBanks(); err != nil {
 		e.HandleErrors(w, err)
 		return

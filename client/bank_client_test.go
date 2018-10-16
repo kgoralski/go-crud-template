@@ -24,7 +24,7 @@ func init() {
 
 func logFatalOnTest(t *testing.T, err error) {
 	if err != nil {
-		log.Fatal(fmt.Errorf("FATAL: %+v\n", err))
+		log.Fatal(fmt.Errorf("fatal: %+v", err))
 		t.Fatal(err)
 	}
 }

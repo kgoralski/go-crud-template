@@ -15,7 +15,7 @@ const (
 	configFilePathUsage    = "config file directory. Config file must be named 'conf_{env}.yml'."
 	configFilePathFlagName = "configFilePath"
 	envUsage               = "environment for app, prod, dev, test"
-	envDefault             = "prod"
+	envDefault             = "dev"
 	envFlagname            = "env"
 )
 
@@ -29,21 +29,22 @@ func init() {
 	configuration(configFilePath, env)
 }
 
-type server struct {
+// Server Instance which contains router and dao
+type Server struct {
 	*http.Server
 	r  *chi.Mux
 	db *dao.BankAPI
 }
 
 // NewServer creates new Server with db connection pool
-func NewServer() *server {
+func NewServer() *Server {
 	router := chi.NewRouter()
-	server := &server{db: setupDB(viper.GetString("database.URL")), r: router}
+	server := &Server{db: setupDB(viper.GetString("database.URL")), r: router}
 	server.routes()
 	return server
 }
 
-func (s *server) routes() {
+func (s *Server) routes() {
 	s.r.Get("/rest/banks/", commonHeaders(s.getBanksHandler))
 	s.r.Get("/rest/banks/{id:[0-9]+}", commonHeaders(s.getBankByIDHandler))
 	s.r.Post("/rest/banks/", commonHeaders(s.createBankHanlder))
@@ -52,8 +53,9 @@ func (s *server) routes() {
 	s.r.Delete("/rest/banks/", commonHeaders(s.deleteAllBanksHandler))
 }
 
-func (s *server) Start() {
-	log.Fatal(http.ListenAndServe(viper.GetString("server.port"), s.r))
+// Start launching the server
+func (s *Server) Start() {
+	log.Fatal(http.ListenAndServe(viper.GetString("Server.port"), s.r))
 }
 
 func configuration(path string, env string) {
@@ -66,14 +68,14 @@ func configuration(path string, env string) {
 	viper.AddConfigPath(path) // working directory
 	err := viper.ReadInConfig()
 	if err != nil {
-		log.Fatal(fmt.Errorf("FATAL: %+v\n", err))
+		log.Fatal(fmt.Errorf("fatal: %+v", err))
 	}
 }
 
 func setupDB(dbURL string) *dao.BankAPI {
 	var db, err = dao.NewBankAPI(dbURL)
 	if err != nil {
-		log.Fatal(fmt.Errorf("FATAL: %+v\n", err))
+		log.Fatal(fmt.Errorf("fatal: %+v", err))
 	}
 	return db
 }

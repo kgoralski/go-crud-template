@@ -8,14 +8,19 @@ import (
 )
 
 const (
-	DbQueryFail      = "DB_QUERY_FAIL"
-	DbNotSupported   = "DB_NOT_SUPPORTED"
-	EntityNotExist   = "ENTITY_NOT_EXIST"
+	// DbQueryFail represents db query failures
+	DbQueryFail = "DB_QUERY_FAIL"
+	// DbNotSupported represents db not supported operation
+	DbNotSupported = "DB_NOT_SUPPORTED"
+	// EntityNotExist represents error that entity doesn't exist in db
+	EntityNotExist = "ENTITY_NOT_EXIST"
+	// DbConnectionFail represents that application couldn't connect to db
 	DbConnectionFail = "DB_CONNECTION_FAIL"
 )
 
+// HandleErrors helps handling errors
 func HandleErrors(w http.ResponseWriter, err error) {
-	log.Print(fmt.Errorf("FATAL: %+v\n", err))
+	log.Print(fmt.Errorf("fatal: %+v", err))
 	if strings.Contains(err.Error(), "connection refused") {
 		http.Error(w, DbConnectionFail, http.StatusServiceUnavailable)
 		return
