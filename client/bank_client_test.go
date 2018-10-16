@@ -2,7 +2,7 @@ package client
 
 import (
 	"fmt"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"testing"
 
 	"github.com/kgoralski/go-crud-template/rest"
@@ -18,7 +18,8 @@ const (
 )
 
 func init() {
-	go rest.StartServer()
+	server := rest.NewServer()
+	go server.Start()
 }
 
 func logFatalOnTest(t *testing.T, err error) {

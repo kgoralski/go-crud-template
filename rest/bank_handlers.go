@@ -8,7 +8,7 @@ import (
 	"github.com/kgoralski/go-crud-template/dao"
 	e "github.com/kgoralski/go-crud-template/handleErr"
 
-	"github.com/gorilla/mux"
+	"github.com/go-chi/chi"
 	"github.com/pkg/errors"
 )
 
@@ -24,8 +24,8 @@ func commonHeaders(fn http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func getBanksHandler(w http.ResponseWriter, _ *http.Request) {
-	banks, err := dao.GetBanks()
+func (s *server) getBanksHandler(w http.ResponseWriter, _ *http.Request) {
+	banks, err := s.db.GetBanks()
 	if err != nil {
 		e.HandleErrors(w, err)
 		return
@@ -36,14 +36,13 @@ func getBanksHandler(w http.ResponseWriter, _ *http.Request) {
 	}
 }
 
-func getBankByIDHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+func (s *server) getBankByIDHandler(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		e.HandleErrors(w, errors.Wrap(err, http.StatusText(http.StatusBadRequest)))
 		return
 	}
-	b, err := dao.GetBankByID(id)
+	b, err := s.db.GetBankByID(id)
 	if err != nil {
 		e.HandleErrors(w, err)
 		return
@@ -54,13 +53,13 @@ func getBankByIDHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func createBankHanlder(w http.ResponseWriter, r *http.Request) {
+func (s *server) createBankHanlder(w http.ResponseWriter, r *http.Request) {
 	var bank dao.Bank
 	if err := json.NewDecoder(r.Body).Decode(&bank); err != nil {
 		e.HandleErrors(w, err)
 		return
 	}
-	id, err := dao.CreateBank(bank)
+	id, err := s.db.CreateBank(bank)
 	if err != nil {
 		e.HandleErrors(w, err)
 		return
@@ -71,24 +70,21 @@ func createBankHanlder(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func deleteBankByIDHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-
-	id, err := strconv.Atoi(vars["id"])
+func (s *server) deleteBankByIDHandler(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		e.HandleErrors(w, errors.Wrap(err, http.StatusText(http.StatusBadRequest)))
 		return
 	}
 
-	if err = dao.DeleteBankByID(id); err != nil {
+	if err = s.db.DeleteBankByID(id); err != nil {
 		e.HandleErrors(w, err)
 		return
 	}
 }
 
-func updateBankHanlder(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+func (s *server) updateBankHanlder(w http.ResponseWriter, r *http.Request) {
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		e.HandleErrors(w, errors.Wrap(err, http.StatusText(http.StatusBadRequest)))
 		return
@@ -98,7 +94,7 @@ func updateBankHanlder(w http.ResponseWriter, r *http.Request) {
 		e.HandleErrors(w, err)
 		return
 	}
-	updatedBank, err := dao.UpdateBank(dao.Bank{ID: id, Name: bank.Name})
+	updatedBank, err := s.db.UpdateBank(dao.Bank{ID: id, Name: bank.Name})
 	if err != nil {
 		e.HandleErrors(w, err)
 		return
@@ -109,8 +105,8 @@ func updateBankHanlder(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func deleteAllBanksHandler(w http.ResponseWriter, _ *http.Request) {
-	if err := dao.DeleteAllBanks(); err != nil {
+func (s *server) deleteAllBanksHandler(w http.ResponseWriter, _ *http.Request) {
+	if err := s.db.DeleteAllBanks(); err != nil {
 		e.HandleErrors(w, err)
 		return
 	}
