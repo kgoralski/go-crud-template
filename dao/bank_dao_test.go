@@ -2,7 +2,7 @@ package dao
 
 import (
 	"fmt"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"testing"
 
 	"github.com/spf13/viper"
@@ -31,65 +31,66 @@ func setupConf() {
 	}
 }
 
+var dbAccess *BankAPI
+
 func init() {
 	setupConf()
 	db, err := NewBankAPI(viper.GetString("database.URL"))
 	if err != nil {
 		log.Fatal(fmt.Errorf("FATAL: %+v\n", err))
 	}
-	DBAccess = db
-	DeleteAllBanks()
+	dbAccess = db
 }
 
 func TestGetBanks(t *testing.T) {
-	DeleteAllBanks()
-	CreateBank(Bank{Name: bzwbk})
-	CreateBank(Bank{Name: mbank})
+	dbAccess.DeleteAllBanks()
+	dbAccess.CreateBank(Bank{Name: bzwbk})
+	dbAccess.CreateBank(Bank{Name: mbank})
 
-	banks, err := GetBanks()
+	banks, err := dbAccess.GetBanks()
 	logFatalOnTest(t, err)
 	assert.Len(t, banks, 2, "Expected size is 2")
 }
 
 func TestCreateBank(t *testing.T) {
-	id, err := CreateBank(Bank{Name: mbank})
+	id, err := dbAccess.CreateBank(Bank{Name: mbank})
 	logFatalOnTest(t, err)
 	assert.NotZero(t, id)
 }
 
 func TestDeleteAllBanks(t *testing.T) {
-	CreateBank(Bank{Name: bzwbk})
-	CreateBank(Bank{Name: mbank})
-	DeleteAllBanks()
-	banks, err := GetBanks()
+	dbAccess.CreateBank(Bank{Name: bzwbk})
+	dbAccess.CreateBank(Bank{Name: mbank})
+	dbAccess.DeleteAllBanks()
+	banks, err := dbAccess.GetBanks()
 	logFatalOnTest(t, err)
 	assert.Empty(t, banks)
 }
 
 func TestGetBankById(t *testing.T) {
-	id, err := CreateBank(Bank{Name: santander})
+	id, err := dbAccess.CreateBank(Bank{Name: santander})
 	logFatalOnTest(t, err)
-	bank, err := GetBankByID(int(id))
+	bank, err := dbAccess.GetBankByID(int(id))
 	logFatalOnTest(t, err)
 
 	assert.Equal(t, santander, bank.Name)
 }
 
 func TestDeleteBankById(t *testing.T) {
-	id, err := CreateBank(Bank{Name: mbank})
+	id, err := dbAccess.CreateBank(Bank{Name: mbank})
 	logFatalOnTest(t, err)
 
-	DeleteBankByID(int(id))
-	banks, err := GetBanks()
+	dbAccess.DeleteBankByID(int(id))
+	banks, err := dbAccess.GetBanks()
 	logFatalOnTest(t, err)
 
 	assert.NotZero(t, banks)
 }
 
 func TestUpdateBank(t *testing.T) {
-	id, err := CreateBank(Bank{Name: mbank})
+	id, err := dbAccess.CreateBank(Bank{Name: mbank})
 	logFatalOnTest(t, err)
-	bank, err := UpdateBank(Bank{ID: int(id), Name: bzwbk})
+	bank, err := dbAccess.UpdateBank(Bank{ID: int(id), Name: bzwbk})
 	logFatalOnTest(t, err)
 
 	assert.Equal(t, bzwbk, bank.Name)

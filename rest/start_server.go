@@ -3,14 +3,11 @@ package rest
 import (
 	"flag"
 	"fmt"
-	"log"
-	"net/http"
-	"os"
-	"regexp"
-
 	"github.com/go-chi/chi"
 	"github.com/kgoralski/go-crud-template/dao"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"net/http"
 )
 
 const (
@@ -30,23 +27,37 @@ func init() {
 	flag.StringVar(&env, envFlagname, envDefault, envUsage)
 	flag.Parse()
 	configuration(configFilePath, env)
-	setupDB(viper.GetString("database.URL"))
 }
 
-// StartServer starts server with REST handlers and initialise db connection pool
-func StartServer() {
-	r := chi.NewRouter()
-	r.Get("/rest/banks/", commonHeaders(getBanksHandler))
-	r.Get("/rest/banks/{id:[0-9]+}", commonHeaders(getBankByIDHandler))
-	r.Post("/rest/banks/", commonHeaders(createBankHanlder))
-	r.Delete("/rest/banks/{id:[0-9]+}", commonHeaders(deleteBankByIDHandler))
-	r.Put("/rest/banks/{id:[0-9]+}", commonHeaders(updateBankHanlder))
-	r.Delete("/rest/banks/", commonHeaders(deleteAllBanksHandler))
-	log.Fatal(http.ListenAndServe(viper.GetString("server.port"), r))
+type server struct {
+	*http.Server
+	r  *chi.Mux
+	db *dao.BankAPI
+}
+
+// NewServer creates new Server with db connection pool
+func NewServer() *server {
+	router := chi.NewRouter()
+	server := &server{db: setupDB(viper.GetString("database.URL")), r: router}
+	server.routes()
+	return server
+}
+
+func (s *server) routes() {
+	s.r.Get("/rest/banks/", commonHeaders(s.getBanksHandler))
+	s.r.Get("/rest/banks/{id:[0-9]+}", commonHeaders(s.getBankByIDHandler))
+	s.r.Post("/rest/banks/", commonHeaders(s.createBankHanlder))
+	s.r.Delete("/rest/banks/{id:[0-9]+}", commonHeaders(s.deleteBankByIDHandler))
+	s.r.Put("/rest/banks/{id:[0-9]+}", commonHeaders(s.updateBankHanlder))
+	s.r.Delete("/rest/banks/", commonHeaders(s.deleteAllBanksHandler))
+}
+
+func (s *server) Start() {
+	log.Fatal(http.ListenAndServe(viper.GetString("server.port"), s.r))
 }
 
 func configuration(path string, env string) {
-	if isTest, _ := regexp.MatchString("/_test/", os.Args[0]); isTest {
+	if flag.Lookup("test.v") != nil {
 		env = "test"
 		path = "../_conf"
 	}
@@ -59,10 +70,10 @@ func configuration(path string, env string) {
 	}
 }
 
-func setupDB(dbURL string) {
+func setupDB(dbURL string) *dao.BankAPI {
 	var db, err = dao.NewBankAPI(dbURL)
 	if err != nil {
 		log.Fatal(fmt.Errorf("FATAL: %+v\n", err))
 	}
-	dao.DBAccess = db
+	return db
 }

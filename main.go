@@ -5,5 +5,6 @@ import (
 )
 
 func main() {
-	rest.StartServer()
+	server := rest.NewServer()
+	server.Start()
 }
