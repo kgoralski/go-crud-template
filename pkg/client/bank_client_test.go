@@ -5,7 +5,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"testing"
 
-	"github.com/kgoralski/go-crud-template/rest"
+	"github.com/kgoralski/go-crud-template/cmd/banks-api"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -18,7 +18,7 @@ const (
 )
 
 func init() {
-	server := rest.NewServer()
+	server := banks_api.NewServer()
 	go server.Start()
 }
 

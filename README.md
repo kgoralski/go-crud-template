@@ -4,11 +4,12 @@
 This code is written with very little experience with Golang. I did my best. CRs and PRs always welcome :)
 
  - go 1.11,
- - gorilla mux for routing,
+ - chi for routing,
  - sqlx for mysql database access (I prefer postgres but this is just example),
  - tests using testify library
  - pkg/errors for better error handling
  - spf13/viper for handling config files 
+ - package design https://www.ardanlabs.com/blog/2017/02/package-oriented-design.html
  - go modules for package management
  - dockerized environment
 

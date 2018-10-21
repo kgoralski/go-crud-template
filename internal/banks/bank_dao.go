@@ -1,13 +1,21 @@
-package dao
+package banks
 
 import (
 	_ "github.com/go-sql-driver/mysql" // db driver registration
 	"github.com/jmoiron/sqlx"
-	e "github.com/kgoralski/go-crud-template/handleErr"
 	"github.com/pkg/errors"
 )
 
-const mysql = "mysql"
+const (
+	// DbQueryFail represents db query failures
+	DbQueryFail = "DB_QUERY_FAIL"
+	// DbNotSupported represents db not supported operation
+	DbNotSupported = "DB_NOT_SUPPORTED"
+	// EntityNotExist represents error that entity doesn't exist in db
+	EntityNotExist = "ENTITY_NOT_EXIST"
+	// DbConnectionFail represents that application couldn't connect to db
+	DbConnectionFail = "DB_CONNECTION_FAIL"
+)
 
 // Bank db entity shared in app for simplicity
 type Bank struct {
@@ -21,11 +29,7 @@ type BankAPI struct {
 }
 
 // NewBankAPI establishing db connection
-func NewBankAPI(sqlConnection string) (*BankAPI, error) {
-	db, err := sqlx.Connect(mysql, sqlConnection)
-	if err != nil {
-		return nil, errors.Wrap(err, err.Error())
-	}
+func NewBankAPI(db *sqlx.DB) (*BankAPI, error) {
 	return &BankAPI{db: db}, nil
 }
 
@@ -33,7 +37,7 @@ func NewBankAPI(sqlConnection string) (*BankAPI, error) {
 func (bankAPI *BankAPI) GetBanks() ([]Bank, error) {
 	var banks = []Bank{}
 	if err := bankAPI.db.Select(&banks, "SELECT * FROM banks"); err != nil {
-		return nil, errors.Wrap(err, e.DbQueryFail)
+		return nil, errors.Wrap(err, DbQueryFail)
 	}
 	return banks, nil
 }
@@ -42,7 +46,7 @@ func (bankAPI *BankAPI) GetBanks() ([]Bank, error) {
 func (bankAPI *BankAPI) GetBankByID(id int) (*Bank, error) {
 	var bank = Bank{}
 	if err := bankAPI.db.Get(&bank, "SELECT * FROM banks WHERE id=?", id); err != nil {
-		return nil, errors.Wrap(err, e.DbQueryFail)
+		return nil, errors.Wrap(err, DbQueryFail)
 	}
 	return &bank, nil
 }
@@ -51,11 +55,11 @@ func (bankAPI *BankAPI) GetBankByID(id int) (*Bank, error) {
 func (bankAPI *BankAPI) CreateBank(bank Bank) (int, error) {
 	result, err := bankAPI.db.Exec("INSERT into banks (name) VALUES (?)", bank.Name)
 	if err != nil {
-		return 0, errors.Wrap(err, e.DbQueryFail)
+		return 0, errors.Wrap(err, DbQueryFail)
 	}
 	lastID, err := result.LastInsertId()
 	if err != nil {
-		return 0, errors.Wrap(err, e.DbNotSupported)
+		return 0, errors.Wrap(err, DbNotSupported)
 	}
 	return int(lastID), nil
 }
@@ -63,7 +67,7 @@ func (bankAPI *BankAPI) CreateBank(bank Bank) (int, error) {
 // DeleteAllBanks deletes all banks inside database
 func (bankAPI *BankAPI) DeleteAllBanks() error {
 	if _, err := bankAPI.db.Exec("TRUNCATE table banks"); err != nil {
-		return errors.Wrap(err, e.DbQueryFail)
+		return errors.Wrap(err, DbQueryFail)
 	}
 	return nil
 }
@@ -72,14 +76,14 @@ func (bankAPI *BankAPI) DeleteAllBanks() error {
 func (bankAPI *BankAPI) DeleteBankByID(id int) error {
 	res, err := bankAPI.db.Exec("DELETE from banks where id=?", id)
 	if err != nil {
-		return errors.Wrap(err, e.DbQueryFail)
+		return errors.Wrap(err, DbQueryFail)
 	}
 	affect, err := res.RowsAffected()
 	if err != nil {
-		return errors.Wrap(err, e.DbQueryFail)
+		return errors.Wrap(err, DbQueryFail)
 	}
 	if affect == 0 {
-		return errors.New(e.EntityNotExist)
+		return errors.New(EntityNotExist)
 	}
 	return nil
 }
@@ -88,11 +92,11 @@ func (bankAPI *BankAPI) DeleteBankByID(id int) error {
 func (bankAPI *BankAPI) UpdateBank(bank Bank) (*Bank, error) {
 	res, err := bankAPI.db.Exec("UPDATE banks SET name=? WHERE id=?", bank.Name, bank.ID)
 	if err != nil {
-		return nil, errors.Wrap(err, e.DbQueryFail)
+		return nil, errors.Wrap(err, DbQueryFail)
 	}
 	affect, err := res.RowsAffected()
 	if affect == 0 {
-		return nil, errors.New(e.EntityNotExist)
+		return nil, errors.New(EntityNotExist)
 	}
 	return &bank, nil
 }

@@ -1,7 +1,8 @@
-package dao
+package banks
 
 import (
 	"fmt"
+	"github.com/kgoralski/go-crud-template/internal/platform/db"
 	log "github.com/sirupsen/logrus"
 	"testing"
 
@@ -24,7 +25,7 @@ func logFatalOnTest(t *testing.T, err error) {
 
 func setupConf() {
 	viper.SetConfigName("conf_test")
-	viper.AddConfigPath("../_conf")
+	viper.AddConfigPath("./../../configs")
 	err := viper.ReadInConfig()
 	if err != nil {
 		log.Fatal(fmt.Errorf("fatal: %+v", err))
@@ -35,11 +36,15 @@ var dbAccess *BankAPI
 
 func init() {
 	setupConf()
-	db, err := NewBankAPI(viper.GetString("database.URL"))
+	mysql, err := db.New(viper.GetString("database.URL"))
 	if err != nil {
 		log.Fatal(fmt.Errorf("fatal: %+v", err))
 	}
-	dbAccess = db
+	bankAPI, err := NewBankAPI(mysql)
+	if err != nil {
+		log.Fatal(fmt.Errorf("fatal: %+v", err))
+	}
+	dbAccess = bankAPI
 }
 
 func TestGetBanks(t *testing.T) {

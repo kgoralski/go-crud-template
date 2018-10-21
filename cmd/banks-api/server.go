@@ -1,17 +1,18 @@
-package rest
+package banks_api
 
 import (
 	"flag"
 	"fmt"
 	"github.com/go-chi/chi"
-	"github.com/kgoralski/go-crud-template/dao"
+	"github.com/kgoralski/go-crud-template/internal/banks"
+	"github.com/kgoralski/go-crud-template/internal/platform/db"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"net/http"
 )
 
 const (
-	defaultConfigFilePath  = "./_conf"
+	defaultConfigFilePath  = "./configs"
 	configFilePathUsage    = "config file directory. Config file must be named 'conf_{env}.yml'."
 	configFilePathFlagName = "configFilePath"
 	envUsage               = "environment for app, prod, dev, test"
@@ -22,7 +23,7 @@ const (
 var configFilePath string
 var env string
 
-func init() {
+func config() {
 	flag.StringVar(&configFilePath, configFilePathFlagName, defaultConfigFilePath, configFilePathUsage)
 	flag.StringVar(&env, envFlagname, envDefault, envUsage)
 	flag.Parse()
@@ -33,11 +34,12 @@ func init() {
 type Server struct {
 	*http.Server
 	r  *chi.Mux
-	db *dao.BankAPI
+	db *banks.BankAPI
 }
 
 // NewServer creates new Server with db connection pool
 func NewServer() *Server {
+	config()
 	router := chi.NewRouter()
 	server := &Server{db: setupDB(viper.GetString("database.URL")), r: router}
 	server.routes()
@@ -61,7 +63,7 @@ func (s *Server) Start() {
 func configuration(path string, env string) {
 	if flag.Lookup("test.v") != nil {
 		env = "test"
-		path = "../_conf"
+		path = "./../../configs"
 	}
 	log.Println("Environment is: " + env + " configFilePath is: " + path)
 	viper.SetConfigName("conf_" + env)
@@ -72,10 +74,14 @@ func configuration(path string, env string) {
 	}
 }
 
-func setupDB(dbURL string) *dao.BankAPI {
-	var db, err = dao.NewBankAPI(dbURL)
+func setupDB(dbURL string) *banks.BankAPI {
+	mysql, err := db.New(dbURL)
 	if err != nil {
 		log.Fatal(fmt.Errorf("fatal: %+v", err))
 	}
-	return db
+	bankAPI, err := banks.NewBankAPI(mysql)
+	if err != nil {
+		log.Fatal(fmt.Errorf("fatal: %+v", err))
+	}
+	return bankAPI
 }
