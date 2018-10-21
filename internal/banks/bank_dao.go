@@ -23,6 +23,16 @@ type Bank struct {
 	Name string `json:"name" db:"name"`
 }
 
+// BankRepository interface for BankAPI
+type BankRepository interface {
+	GetBanks() ([]Bank, error)
+	GetBankByID(id int) (*Bank, error)
+	CreateBank(bank Bank) (int, error)
+	DeleteAllBanks() error
+	UpdateBank(bank Bank) (*Bank, error)
+	DeleteBankByID(id int) error
+}
+
 // BankAPI has db *sqlx.DB inside
 type BankAPI struct {
 	db *sqlx.DB

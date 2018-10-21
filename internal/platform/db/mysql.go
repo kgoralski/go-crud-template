@@ -7,6 +7,7 @@ import (
 
 const mysql = "mysql"
 
+// New database connection
 func New(sqlConnection string) (*sqlx.DB, error) {
 	db, err := sqlx.Connect(mysql, sqlConnection)
 	if err != nil {

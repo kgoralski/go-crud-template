@@ -1,4 +1,4 @@
-package banks_api
+package servid
 
 import (
 	"encoding/json"

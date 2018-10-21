@@ -1,4 +1,4 @@
-package banks_api
+package servid
 
 import (
 	"flag"
@@ -34,7 +34,7 @@ func config() {
 type Server struct {
 	*http.Server
 	r  *chi.Mux
-	db *banks.BankAPI
+	db banks.BankRepository
 }
 
 // NewServer creates new Server with db connection pool
@@ -74,7 +74,7 @@ func configuration(path string, env string) {
 	}
 }
 
-func setupDB(dbURL string) *banks.BankAPI {
+func setupDB(dbURL string) banks.BankRepository {
 	mysql, err := db.New(dbURL)
 	if err != nil {
 		log.Fatal(fmt.Errorf("fatal: %+v", err))

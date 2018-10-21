@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/kgoralski/go-crud-template/cmd/banks-api"
+	"github.com/kgoralski/go-crud-template/cmd/servid"
 )
 
 func main() {
-	server := banks_api.NewServer()
+	server := servid.NewServer()
 	server.Start()
 }
