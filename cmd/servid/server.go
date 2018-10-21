@@ -16,7 +16,7 @@ const (
 	configFilePathUsage    = "config file directory. Config file must be named 'conf_{env}.yml'."
 	configFilePathFlagName = "configFilePath"
 	envUsage               = "environment for app, prod, dev, test"
-	envDefault             = "dev"
+	envDefault             = "prod"
 	envFlagname            = "env"
 )
 
