@@ -59,8 +59,8 @@ func TestGetOneBankClient(t *testing.T) {
 }
 
 func TestCreateBankClient(t *testing.T) {
-	bank := bank{Name: alior}
-	id, err := postBank(bank)
+	b := bank{Name: alior}
+	id, err := postBank(b)
 	logFatalOnTest(t, err)
 
 	createdBank, errQuery := getOneBank(id)

@@ -32,7 +32,7 @@ func setupConf() {
 	}
 }
 
-var dbAccess *BankAPI
+var dbAccess bankRepository
 
 func init() {
 	setupConf()
@@ -40,62 +40,79 @@ func init() {
 	if err != nil {
 		log.Fatal(fmt.Errorf("fatal: %+v", err))
 	}
-	bankAPI, err := NewBankAPI(mysql)
-	if err != nil {
-		log.Fatal(fmt.Errorf("fatal: %+v", err))
-	}
-	dbAccess = bankAPI
+	dbAccess = &bankDAO{db: mysql}
 }
 
 func TestGetBanks(t *testing.T) {
-	dbAccess.DeleteAllBanks()
-	dbAccess.CreateBank(Bank{Name: bzwbk})
-	dbAccess.CreateBank(Bank{Name: mbank})
+	err := dbAccess.deleteAllBanks()
+	if err != nil {
+		assert.Fail(t, "deleteAllBanks failed")
+	}
+	_, err1 := dbAccess.createBank(Bank{Name: bzwbk})
+	if err1 != nil {
+		assert.Fail(t, "createBank failed")
+	}
+	_, err2 := dbAccess.createBank(Bank{Name: mbank})
+	if err2 != nil {
+		assert.Fail(t, "createBank failed")
+	}
 
-	banks, err := dbAccess.GetBanks()
+	banks, err := dbAccess.getBanks()
 	logFatalOnTest(t, err)
 	assert.Len(t, banks, 2, "Expected size is 2")
 }
 
 func TestCreateBank(t *testing.T) {
-	id, err := dbAccess.CreateBank(Bank{Name: mbank})
+	id, err := dbAccess.createBank(Bank{Name: mbank})
 	logFatalOnTest(t, err)
 	assert.NotZero(t, id)
 }
 
 func TestDeleteAllBanks(t *testing.T) {
-	dbAccess.CreateBank(Bank{Name: bzwbk})
-	dbAccess.CreateBank(Bank{Name: mbank})
-	dbAccess.DeleteAllBanks()
-	banks, err := dbAccess.GetBanks()
+	_, err1 := dbAccess.createBank(Bank{Name: bzwbk})
+	if err1 != nil {
+		assert.Fail(t, "createBank failed")
+	}
+	_, err2 := dbAccess.createBank(Bank{Name: mbank})
+	if err2 != nil {
+		assert.Fail(t, "createBank failed")
+	}
+	err := dbAccess.deleteAllBanks()
+	if err != nil {
+		assert.Fail(t, "deleteAllBanks failed")
+	}
+	banks, err := dbAccess.getBanks()
 	logFatalOnTest(t, err)
 	assert.Empty(t, banks)
 }
 
 func TestGetBankById(t *testing.T) {
-	id, err := dbAccess.CreateBank(Bank{Name: santander})
+	id, err := dbAccess.createBank(Bank{Name: santander})
 	logFatalOnTest(t, err)
-	bank, err := dbAccess.GetBankByID(int(id))
+	bank, err := dbAccess.getBankByID(int(id))
 	logFatalOnTest(t, err)
 
 	assert.Equal(t, santander, bank.Name)
 }
 
 func TestDeleteBankById(t *testing.T) {
-	id, err := dbAccess.CreateBank(Bank{Name: mbank})
+	id, err := dbAccess.createBank(Bank{Name: mbank})
 	logFatalOnTest(t, err)
 
-	dbAccess.DeleteBankByID(int(id))
-	banks, err := dbAccess.GetBanks()
+	err = dbAccess.deleteBankByID(int(id))
+	if err != nil {
+		assert.Fail(t, "deleteBankByID failed")
+	}
+	banks, err := dbAccess.getBanks()
 	logFatalOnTest(t, err)
 
 	assert.NotZero(t, banks)
 }
 
 func TestUpdateBank(t *testing.T) {
-	id, err := dbAccess.CreateBank(Bank{Name: mbank})
+	id, err := dbAccess.createBank(Bank{Name: mbank})
 	logFatalOnTest(t, err)
-	bank, err := dbAccess.UpdateBank(Bank{ID: int(id), Name: bzwbk})
+	bank, err := dbAccess.updateBank(Bank{ID: int(id), Name: bzwbk})
 	logFatalOnTest(t, err)
 
 	assert.Equal(t, bzwbk, bank.Name)

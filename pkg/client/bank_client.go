@@ -33,12 +33,12 @@ func getOneBank(id int) (*bank, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, err.Error())
 	}
-	var bank bank
-	if err := json.NewDecoder(resp.Body).Decode(&bank); err != nil {
+	var b bank
+	if err := json.NewDecoder(resp.Body).Decode(&b); err != nil {
 		return nil, errors.Wrap(err, err.Error())
 	}
 	defer resp.Body.Close()
-	return &bank, nil
+	return &b, nil
 }
 
 func postBank(bank bank) (int, error) {
