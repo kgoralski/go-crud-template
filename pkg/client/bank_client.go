@@ -20,11 +20,11 @@ func getAllBanks() ([]bank, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, err.Error())
 	}
+	defer resp.Body.Close()
 	var banks []bank
 	if err := json.NewDecoder(resp.Body).Decode(&banks); err != nil {
 		return nil, errors.Wrap(err, err.Error())
 	}
-	defer resp.Body.Close()
 	return banks, nil
 }
 
@@ -33,11 +33,11 @@ func getOneBank(id int) (*bank, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, err.Error())
 	}
+	defer resp.Body.Close()
 	var b bank
 	if err := json.NewDecoder(resp.Body).Decode(&b); err != nil {
 		return nil, errors.Wrap(err, err.Error())
 	}
-	defer resp.Body.Close()
 	return &b, nil
 }
 
