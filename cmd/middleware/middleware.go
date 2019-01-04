@@ -41,13 +41,14 @@ func HandleErrors(w http.ResponseWriter, err error) {
 	}
 	if err.Error() == http.StatusText(400) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 	switch err.(type) {
-	case DbQueryError:
+	case ErrDbQuery:
 		http.Error(w, err.Error(), http.StatusConflict)
-	case DbNotSupportedError:
+	case ErrDbNotSupported:
 		http.Error(w, err.Error(), http.StatusConflict)
-	case EntityNotFoundError:
+	case ErrEntityNotFound:
 		http.Error(w, err.Error(), http.StatusNotFound)
 	default:
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
@@ -55,29 +56,29 @@ func HandleErrors(w http.ResponseWriter, err error) {
 	return
 }
 
-// DbQueryError will be mapped to 409 conflict status
-type DbQueryError struct {
+// ErrDbQuery will be mapped to 409 conflict status
+type ErrDbQuery struct {
 	Err error
 }
 
-func (e DbQueryError) Error() string {
+func (e ErrDbQuery) Error() string {
 	return fmt.Sprintf("%s", e.Err)
 }
 
-// DbNotSupportedError will be mapped to 409 conflict status
-type DbNotSupportedError struct {
+// ErrDbNotSupported will be mapped to 409 conflict status
+type ErrDbNotSupported struct {
 	Err error
 }
 
-func (e DbNotSupportedError) Error() string {
+func (e ErrDbNotSupported) Error() string {
 	return fmt.Sprintf("%s", e.Err)
 }
 
-// EntityNotFoundError will be mapped to 404 not found status
-type EntityNotFoundError struct {
+// ErrEntityNotFound will be mapped to 404 not found status
+type ErrEntityNotFound struct {
 	Err error
 }
 
-func (e EntityNotFoundError) Error() string {
+func (e ErrEntityNotFound) Error() string {
 	return fmt.Sprintf("%s", e.Err)
 }
