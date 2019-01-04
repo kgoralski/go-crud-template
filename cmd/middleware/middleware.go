@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"fmt"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strings"
 )
@@ -24,31 +24,60 @@ const (
 )
 
 // CommonHeaders to share between packages
-func CommonHeaders(fn http.HandlerFunc) http.HandlerFunc {
+func CommonHeaders(h http.HandlerFunc) http.HandlerFunc {
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set(contentType, applicationJSON)
-		fn(w, r)
+		h(w, r)
 	}
 }
 
 // HandleErrors , DB errors to Rest mapper
 func HandleErrors(w http.ResponseWriter, err error) {
-	log.Print(fmt.Errorf("fatal: %+v", err))
+	log.Warn(fmt.Errorf("fatal: %+v", err))
 	if strings.Contains(err.Error(), "connection refused") {
 		http.Error(w, DbConnectionFail, http.StatusServiceUnavailable)
 		return
 	}
-	switch err.Error() {
-	case DbQueryFail:
-		http.Error(w, err.Error(), http.StatusConflict)
-	case DbNotSupported:
-		http.Error(w, err.Error(), http.StatusConflict)
-	case EntityNotExist:
-		http.Error(w, err.Error(), http.StatusNotFound)
-	case http.StatusText(400):
+	if err.Error() == http.StatusText(400) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
+	switch err.(type) {
+	case DbQueryError:
+		http.Error(w, err.Error(), http.StatusConflict)
+	case DbNotSupportedError:
+		http.Error(w, err.Error(), http.StatusConflict)
+	case EntityNotFoundError:
+		http.Error(w, err.Error(), http.StatusNotFound)
 	default:
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 	return
+}
+
+// DbQueryError will be mapped to 409 conflict status
+type DbQueryError struct {
+	Err error
+}
+
+func (e DbQueryError) Error() string {
+	return fmt.Sprintf("%s", e.Err)
+}
+
+// DbNotSupportedError will be mapped to 409 conflict status
+type DbNotSupportedError struct {
+	Err error
+}
+
+func (e DbNotSupportedError) Error() string {
+	return fmt.Sprintf("%s", e.Err)
+}
+
+// EntityNotFoundError will be mapped to 404 not found status
+type EntityNotFoundError struct {
+	Err error
+}
+
+func (e EntityNotFoundError) Error() string {
+	return fmt.Sprintf("%s", e.Err)
 }
