@@ -62,7 +62,7 @@ type ErrDbQuery struct {
 }
 
 func (e ErrDbQuery) Error() string {
-	return fmt.Sprintf("%s", e.Err)
+	return fmt.Sprintf("%s: %s", DbQueryFail, e.Err)
 }
 
 // ErrDbNotSupported will be mapped to 409 conflict status
@@ -71,7 +71,7 @@ type ErrDbNotSupported struct {
 }
 
 func (e ErrDbNotSupported) Error() string {
-	return fmt.Sprintf("%s", e.Err)
+	return fmt.Sprintf("%s: %s", DbNotSupported, e.Err)
 }
 
 // ErrEntityNotFound will be mapped to 404 not found status
@@ -80,5 +80,5 @@ type ErrEntityNotFound struct {
 }
 
 func (e ErrEntityNotFound) Error() string {
-	return fmt.Sprintf("%s", e.Err)
+	return fmt.Sprintf("%s: %s", EntityNotExist, e.Err)
 }
