@@ -34,7 +34,6 @@ func CommonHeaders(h http.HandlerFunc) http.HandlerFunc {
 
 // HandleErrors , DB errors to Rest mapper
 func HandleErrors(w http.ResponseWriter, err error) {
-	log.Warn(fmt.Errorf("fatal: %+v", err))
 	if strings.Contains(err.Error(), "connection refused") {
 		http.Error(w, DbConnectionFail, http.StatusServiceUnavailable)
 		return
@@ -45,12 +44,16 @@ func HandleErrors(w http.ResponseWriter, err error) {
 	}
 	switch err.(type) {
 	case ErrDbQuery:
+		log.Warnf("fatal: %+v\n", err.(ErrDbQuery).Err)
 		http.Error(w, err.Error(), http.StatusConflict)
 	case ErrDbNotSupported:
+		log.Warnf("fatal: %+v\n", err.(ErrDbNotSupported).Err)
 		http.Error(w, err.Error(), http.StatusConflict)
 	case ErrEntityNotFound:
+		log.Warnf("fatal: %+v\n", err.(ErrEntityNotFound).Err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 	default:
+		log.Warnf("fatal: %+v\n", err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 	return
