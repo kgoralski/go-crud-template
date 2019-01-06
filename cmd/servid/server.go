@@ -10,6 +10,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"net/http"
+	"os"
 )
 
 const (
@@ -25,10 +26,20 @@ var configFilePath string
 var env string
 
 func config() {
+	logger()
 	flag.StringVar(&configFilePath, configFilePathFlagName, defaultConfigFilePath, configFilePathUsage)
 	flag.StringVar(&env, envFlagname, envDefault, envUsage)
 	flag.Parse()
 	configuration(configFilePath, env)
+}
+
+func logger() {
+	log.SetFormatter(&log.TextFormatter{
+		ForceColors:   true,
+		DisableColors: false,
+		FullTimestamp: true,
+	})
+	log.SetOutput(os.Stdout)
 }
 
 // ServerInstance Instance which contains router and dao
