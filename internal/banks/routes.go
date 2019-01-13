@@ -13,13 +13,13 @@ import (
 
 // Router structs represents Banks Handlers
 type Router struct {
-	r          *chi.Mux
-	repository repository
+	r     *chi.Mux
+	store *banksStore
 }
 
 // NewRouter is creating New Bank Router Handlers
 func NewRouter(r *chi.Mux, db *sqlx.DB) *Router {
-	return &Router{r, &banksRepository{db: db}}
+	return &Router{r, &banksStore{db: db}}
 }
 
 // Routes , all banks routes
@@ -34,7 +34,7 @@ func (h *Router) Routes() {
 
 func (h *Router) getBanks() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		repository, err := h.repository.getAll()
+		repository, err := h.store.getAll()
 		if err != nil {
 			middleware.HandleErrors(w, err)
 			return
@@ -54,7 +54,7 @@ func (h *Router) getBankByID() http.HandlerFunc {
 			middleware.HandleErrors(w, errors.Wrap(err, http.StatusText(http.StatusBadRequest)))
 			return
 		}
-		b, err := h.repository.get(id)
+		b, err := h.store.get(id)
 		if err != nil {
 			middleware.HandleErrors(w, err)
 			return
@@ -73,7 +73,7 @@ func (h *Router) createBank() http.HandlerFunc {
 			middleware.HandleErrors(w, err)
 			return
 		}
-		id, err := h.repository.create(bank)
+		id, err := h.store.create(bank)
 		if err != nil {
 			middleware.HandleErrors(w, err)
 			return
@@ -93,7 +93,7 @@ func (h *Router) deleteBankByID() http.HandlerFunc {
 			return
 		}
 
-		if err = h.repository.delete(id); err != nil {
+		if err = h.store.delete(id); err != nil {
 			middleware.HandleErrors(w, err)
 			return
 		}
@@ -112,7 +112,7 @@ func (h *Router) updateBank() http.HandlerFunc {
 			middleware.HandleErrors(w, errDecode)
 			return
 		}
-		updatedBank, err := h.repository.update(Bank{ID: id, Name: bank.Name})
+		updatedBank, err := h.store.update(Bank{ID: id, Name: bank.Name})
 		if err != nil {
 			middleware.HandleErrors(w, err)
 			return
@@ -126,7 +126,7 @@ func (h *Router) updateBank() http.HandlerFunc {
 
 func (h *Router) deleteAllBanks() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if err := h.repository.deleteAll(); err != nil {
+		if err := h.store.deleteAll(); err != nil {
 			middleware.HandleErrors(w, err)
 			return
 		}

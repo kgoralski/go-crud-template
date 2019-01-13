@@ -32,7 +32,7 @@ func setupConf() {
 	}
 }
 
-var dbAccess repository
+var dbAccess store
 
 func init() {
 	setupConf()
@@ -40,7 +40,7 @@ func init() {
 	if err != nil {
 		log.Fatal(fmt.Errorf("fatal: %+v", err))
 	}
-	dbAccess = &banksRepository{db: mysql}
+	dbAccess = &banksStore{db: mysql}
 }
 
 func TestGetBanks(t *testing.T) {

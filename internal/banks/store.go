@@ -14,7 +14,7 @@ type Bank struct {
 	Name string `json:"name" DB:"name"`
 }
 
-type repository interface {
+type store interface {
 	getAll() ([]Bank, error)
 	get(id int) (*Bank, error)
 	create(bank Bank) (int, error)
@@ -23,20 +23,20 @@ type repository interface {
 	delete(id int) error
 }
 
-type banksRepository struct {
+type banksStore struct {
 	db *sqlx.DB
 }
 
-func (r *banksRepository) getAll() ([]Bank, error) {
-	var banks = []Bank{}
+func (r *banksStore) getAll() ([]Bank, error) {
+	var banks []Bank
 	if err := r.db.Select(&banks, "SELECT * FROM banks"); err != nil {
 		return nil, dbErrors.ErrDbQuery{Err: errors.WithStack(err)}
 	}
 	return banks, nil
 }
 
-func (r *banksRepository) get(id int) (*Bank, error) {
-	var bank = Bank{}
+func (r *banksStore) get(id int) (*Bank, error) {
+	var bank Bank
 	if err := r.db.Get(&bank, "SELECT * FROM banks WHERE id=?", id); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, dbErrors.ErrEntityNotFound{Err: errors.WithStack(err)}
@@ -46,7 +46,7 @@ func (r *banksRepository) get(id int) (*Bank, error) {
 	return &bank, nil
 }
 
-func (r *banksRepository) create(bank Bank) (int, error) {
+func (r *banksStore) create(bank Bank) (int, error) {
 	result, err := r.db.Exec("INSERT into banks (name) VALUES (?)", bank.Name)
 	if err != nil {
 		return 0, dbErrors.ErrDbQuery{Err: errors.WithStack(err)}
@@ -58,14 +58,14 @@ func (r *banksRepository) create(bank Bank) (int, error) {
 	return int(lastID), nil
 }
 
-func (r *banksRepository) deleteAll() error {
+func (r *banksStore) deleteAll() error {
 	if _, err := r.db.Exec("TRUNCATE table banks"); err != nil {
 		return dbErrors.ErrDbQuery{Err: errors.WithStack(err)}
 	}
 	return nil
 }
 
-func (r *banksRepository) delete(id int) error {
+func (r *banksStore) delete(id int) error {
 	res, err := r.db.Exec("DELETE from banks where id=?", id)
 	if err != nil {
 		return dbErrors.ErrDbQuery{Err: errors.WithStack(err)}
@@ -80,7 +80,7 @@ func (r *banksRepository) delete(id int) error {
 	return nil
 }
 
-func (r *banksRepository) update(bank Bank) (*Bank, error) {
+func (r *banksStore) update(bank Bank) (*Bank, error) {
 	res, err := r.db.Exec("UPDATE banks SET name=? WHERE id=?", bank.Name, bank.ID)
 	if err != nil {
 		return nil, dbErrors.ErrDbQuery{Err: errors.WithStack(err)}
