@@ -5,6 +5,6 @@ import (
 )
 
 func main() {
-	server := servid.NewServer()
+	server := servid.NewApp()
 	server.Start()
 }

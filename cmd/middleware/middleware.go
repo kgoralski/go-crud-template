@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"fmt"
+	"github.com/kgoralski/go-crud-template/internal/banks/domain"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strings"
@@ -13,19 +13,12 @@ const (
 )
 
 const (
-	// DbQueryFail represents DB query failures
-	DbQueryFail = "DB_QUERY_FAIL"
-	// DbNotSupported represents DB not supported operation
-	DbNotSupported = "DB_NOT_SUPPORTED"
-	// EntityNotExist represents error that entity doesn't exist in DB
-	EntityNotExist = "ENTITY_NOT_EXIST"
 	// DbConnectionFail represents that application couldn't connect to DB
 	DbConnectionFail = "DB_CONNECTION_FAIL"
 )
 
 // CommonHeaders to share between packages
 func CommonHeaders(h http.HandlerFunc) http.HandlerFunc {
-
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set(contentType, applicationJSON)
 		h(w, r)
@@ -46,45 +39,18 @@ func HandleErrors(w http.ResponseWriter, err error) {
 		return
 	}
 	switch err.(type) {
-	case ErrDbQuery:
-		log.Warnf(logFormat, err.(ErrDbQuery).Err)
+	case domain.ErrDbQuery:
+		log.Warnf(logFormat, err.(domain.ErrDbQuery).Err)
 		http.Error(w, err.Error(), http.StatusConflict)
-	case ErrDbNotSupported:
-		log.Warnf(logFormat, err.(ErrDbNotSupported).Err)
+	case domain.ErrDbNotSupported:
+		log.Warnf(logFormat, err.(domain.ErrDbNotSupported).Err)
 		http.Error(w, err.Error(), http.StatusConflict)
-	case ErrEntityNotFound:
-		log.Warnf(logFormat, err.(ErrEntityNotFound).Err)
+	case domain.ErrEntityNotFound:
+		log.Warnf(logFormat, err.(domain.ErrEntityNotFound).Err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 	default:
 		log.Warnf(logFormat, err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 	return
-}
-
-// ErrDbQuery will be mapped to 409 conflict status
-type ErrDbQuery struct {
-	Err error
-}
-
-func (e ErrDbQuery) Error() string {
-	return fmt.Sprintf("%s: %s", DbQueryFail, e.Err)
-}
-
-// ErrDbNotSupported will be mapped to 409 conflict status
-type ErrDbNotSupported struct {
-	Err error
-}
-
-func (e ErrDbNotSupported) Error() string {
-	return fmt.Sprintf("%s: %s", DbNotSupported, e.Err)
-}
-
-// ErrEntityNotFound will be mapped to 404 not found status
-type ErrEntityNotFound struct {
-	Err error
-}
-
-func (e ErrEntityNotFound) Error() string {
-	return fmt.Sprintf("%s: %s", EntityNotExist, e.Err)
 }

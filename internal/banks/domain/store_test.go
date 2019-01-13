@@ -1,4 +1,4 @@
-package banks
+package domain
 
 import (
 	"fmt"
@@ -25,14 +25,14 @@ func logFatalOnTest(t *testing.T, err error) {
 
 func setupConf() {
 	viper.SetConfigName("conf_test")
-	viper.AddConfigPath("./../../configs")
+	viper.AddConfigPath("./../../../configs")
 	err := viper.ReadInConfig()
 	if err != nil {
 		log.Fatal(fmt.Errorf("fatal: %+v", err))
 	}
 }
 
-var dbAccess store
+var dbAccess *BankStore
 
 func init() {
 	setupConf()
@@ -40,7 +40,7 @@ func init() {
 	if err != nil {
 		log.Fatal(fmt.Errorf("fatal: %+v", err))
 	}
-	dbAccess = &banksStore{db: mysql}
+	dbAccess = &BankStore{db: mysql}
 }
 
 func TestGetBanks(t *testing.T) {

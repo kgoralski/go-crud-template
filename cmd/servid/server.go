@@ -18,7 +18,7 @@ const (
 	configFilePathUsage    = "config file directory. Config file must be named 'conf_{env}.yml'."
 	configFilePathFlagName = "configFilePath"
 	envUsage               = "environment for app, prod, dev, test"
-	envDefault             = "prod"
+	envDefault             = "dev"
 	envFlagname            = "env"
 )
 
@@ -42,21 +42,21 @@ func logger() {
 	log.SetOutput(os.Stdout)
 }
 
-// ServerInstance Instance which contains router and dao
-type ServerInstance struct {
+// App Instance which contains router and dao
+type App struct {
 	*http.Server
 	r          *chi.Mux
 	db         *sqlx.DB
 	bankRouter *banks.Router
 }
 
-// NewServer creates new ServerInstance with db connection pool
-func NewServer() *ServerInstance {
+// NewApp creates new App with db connection pool
+func NewApp() *App {
 	config()
 	router := chi.NewRouter()
 	database := setupDB(viper.GetString("database.URL"))
 	banksRouter := banks.NewRouter(router, database)
-	server := &ServerInstance{
+	server := &App{
 		r:          router,
 		db:         database,
 		bankRouter: banksRouter,
@@ -66,11 +66,11 @@ func NewServer() *ServerInstance {
 }
 
 // Start launching the server
-func (s *ServerInstance) Start() {
+func (s *App) Start() {
 	log.Fatal(http.ListenAndServe(viper.GetString("server.port"), s.r))
 }
 
-func (s *ServerInstance) routes() {
+func (s *App) routes() {
 	s.bankRouter.Routes()
 }
 
