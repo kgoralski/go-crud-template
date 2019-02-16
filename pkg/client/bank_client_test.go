@@ -18,7 +18,7 @@ const (
 )
 
 func init() {
-	server := servid.NewServer()
+	server := servid.NewApp()
 	go server.Start()
 }
 
