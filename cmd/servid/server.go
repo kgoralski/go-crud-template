@@ -66,12 +66,24 @@ func NewApp() *App {
 }
 
 // Start launching the server
-func (s *App) Start() {
-	log.Fatal(http.ListenAndServe(viper.GetString("server.port"), s.r))
+func (a *App) Start() {
+	log.Fatal(http.ListenAndServe(viper.GetString("server.port"), a.r))
 }
 
-func (s *App) routes() {
-	s.bankRouter.Routes()
+func (a *App) routes() {
+	a.bankRouter.Routes()
+	showRoutes(a.r)
+}
+
+func showRoutes(r *chi.Mux) {
+	log.Info("registered routes: ")
+	walkFunc := func(method string, route string, handler http.Handler, m ...func(http.Handler) http.Handler) error {
+		log.Infof("%s %s\n", method, route)
+		return nil
+	}
+	if err := chi.Walk(r, walkFunc); err != nil {
+		log.Infof("Logging err: %s\n", err.Error())
+	}
 }
 
 func configuration(path string, env string) {

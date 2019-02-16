@@ -58,6 +58,7 @@ func TestRouterGetBankWithTestify(t *testing.T) {
 	mockService.On("GetBank", 1).Return(mockResponse, nil).Once()
 
 	h := &Router{chi.NewRouter(), mockService}
+	h.Routes()
 
 	// when
 	r, err := http.NewRequest(http.MethodGet, "/rest/banks/1", nil)
@@ -66,7 +67,6 @@ func TestRouterGetBankWithTestify(t *testing.T) {
 	}
 
 	w := httptest.NewRecorder()
-	h.r.Get("/rest/banks/{id}", h.getBankByID())
 	h.r.ServeHTTP(w, r)
 
 	// then

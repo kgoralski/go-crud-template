@@ -5,8 +5,10 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/kgoralski/go-crud-template/cmd/middleware"
 	"github.com/kgoralski/go-crud-template/internal/banks/domain"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/go-chi/chi"
 	"github.com/pkg/errors"
@@ -50,11 +52,11 @@ func (h *Router) getBanks() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		banks, err := h.service.GetBanks()
 		if err != nil {
-			middleware.HandleErrors(w, err)
+			handleErrors(w, err)
 			return
 		}
 		if err := json.NewEncoder(w).Encode(banks); err != nil {
-			middleware.HandleErrors(w, err)
+			handleErrors(w, err)
 			return
 		}
 	}
@@ -65,16 +67,16 @@ func (h *Router) getBankByID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(chi.URLParam(r, "id"))
 		if err != nil {
-			middleware.HandleErrors(w, errors.Wrap(err, http.StatusText(http.StatusBadRequest)))
+			handleErrors(w, errors.Wrap(err, http.StatusText(http.StatusBadRequest)))
 			return
 		}
 		b, err := h.service.GetBank(id)
 		if err != nil {
-			middleware.HandleErrors(w, err)
+			handleErrors(w, err)
 			return
 		}
 		if err := json.NewEncoder(w).Encode(b); err != nil {
-			middleware.HandleErrors(w, err)
+			handleErrors(w, err)
 			return
 		}
 	}
@@ -84,16 +86,16 @@ func (h *Router) createBank() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var bank domain.Bank
 		if err := json.NewDecoder(r.Body).Decode(&bank); err != nil {
-			middleware.HandleErrors(w, err)
+			handleErrors(w, err)
 			return
 		}
 		id, err := h.service.Create(bank)
 		if err != nil {
-			middleware.HandleErrors(w, err)
+			handleErrors(w, err)
 			return
 		}
 		if err := json.NewEncoder(w).Encode(id); err != nil {
-			middleware.HandleErrors(w, err)
+			handleErrors(w, err)
 			return
 		}
 	}
@@ -103,12 +105,12 @@ func (h *Router) deleteBankByID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(chi.URLParam(r, "id"))
 		if err != nil {
-			middleware.HandleErrors(w, errors.Wrap(err, http.StatusText(http.StatusBadRequest)))
+			handleErrors(w, errors.Wrap(err, http.StatusText(http.StatusBadRequest)))
 			return
 		}
 
 		if err = h.service.Delete(id); err != nil {
-			middleware.HandleErrors(w, err)
+			handleErrors(w, err)
 			return
 		}
 	}
@@ -118,21 +120,21 @@ func (h *Router) updateBank() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(chi.URLParam(r, "id"))
 		if err != nil {
-			middleware.HandleErrors(w, errors.Wrap(err, http.StatusText(http.StatusBadRequest)))
+			handleErrors(w, errors.Wrap(err, http.StatusText(http.StatusBadRequest)))
 			return
 		}
 		var bank domain.Bank
 		if errDecode := json.NewDecoder(r.Body).Decode(&bank); err != nil {
-			middleware.HandleErrors(w, errDecode)
+			handleErrors(w, errDecode)
 			return
 		}
 		updatedBank, err := h.service.Update(domain.Bank{ID: id, Name: bank.Name})
 		if err != nil {
-			middleware.HandleErrors(w, err)
+			handleErrors(w, err)
 			return
 		}
 		if err := json.NewEncoder(w).Encode(updatedBank); err != nil {
-			middleware.HandleErrors(w, err)
+			handleErrors(w, err)
 			return
 		}
 	}
@@ -141,8 +143,38 @@ func (h *Router) updateBank() http.HandlerFunc {
 func (h *Router) deleteAllBanks() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := h.service.DeleteBanks(); err != nil {
-			middleware.HandleErrors(w, err)
+			handleErrors(w, err)
 			return
 		}
 	}
+}
+
+// HandleErrors , DB errors to Rest mapper
+func handleErrors(w http.ResponseWriter, err error) {
+	const logFormat = "fatal: %+v\n"
+	if strings.Contains(err.Error(), "connection refused") {
+		log.Warnf(logFormat, err)
+		http.Error(w, "DB_CONNECTION_FAIL", http.StatusServiceUnavailable)
+		return
+	}
+	if err.Error() == http.StatusText(400) {
+		log.Warnf(logFormat, err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	switch err.(type) {
+	case domain.ErrDbQuery:
+		log.Warnf(logFormat, err.(domain.ErrDbQuery).Err)
+		http.Error(w, err.Error(), http.StatusConflict)
+	case domain.ErrDbNotSupported:
+		log.Warnf(logFormat, err.(domain.ErrDbNotSupported).Err)
+		http.Error(w, err.Error(), http.StatusConflict)
+	case domain.ErrEntityNotFound:
+		log.Warnf(logFormat, err.(domain.ErrEntityNotFound).Err)
+		http.Error(w, err.Error(), http.StatusNotFound)
+	default:
+		log.Warnf(logFormat, err)
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	}
+	return
 }
