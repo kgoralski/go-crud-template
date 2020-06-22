@@ -1,5 +1,7 @@
 module github.com/kgoralski/go-crud-template
 
+go 1.14
+
 require (
 	github.com/BurntSushi/toml v0.3.0 // indirect
 	github.com/fsnotify/fsnotify v1.4.7 // indirect

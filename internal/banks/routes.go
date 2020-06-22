@@ -149,32 +149,46 @@ func (h *Router) deleteAllBanks() http.HandlerFunc {
 	}
 }
 
+// ErrorResponse represents json error structure
+type ErrorResponse struct {
+	Error string `json:"error"`
+}
+
+// JSONError is converting error to JSON response
+func JSONError(w http.ResponseWriter, error string, code int) {
+	w.WriteHeader(code)
+	if err := json.NewEncoder(w).Encode(ErrorResponse{error}); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
 // HandleErrors , DB errors to Rest mapper
 func handleErrors(w http.ResponseWriter, err error) {
 	const logFormat = "fatal: %+v\n"
 	if strings.Contains(err.Error(), "connection refused") {
 		log.Warnf(logFormat, err)
-		http.Error(w, "DB_CONNECTION_FAIL", http.StatusServiceUnavailable)
+		JSONError(w, "DB_CONNECTION_FAIL", http.StatusServiceUnavailable)
 		return
 	}
 	if err.Error() == http.StatusText(400) {
 		log.Warnf(logFormat, err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		JSONError(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	switch err.(type) {
 	case domain.ErrDbQuery:
 		log.Warnf(logFormat, err.(domain.ErrDbQuery).Err)
-		http.Error(w, err.Error(), http.StatusConflict)
+		JSONError(w, err.Error(), http.StatusConflict)
 	case domain.ErrDbNotSupported:
 		log.Warnf(logFormat, err.(domain.ErrDbNotSupported).Err)
-		http.Error(w, err.Error(), http.StatusConflict)
+		JSONError(w, err.Error(), http.StatusConflict)
 	case domain.ErrEntityNotFound:
 		log.Warnf(logFormat, err.(domain.ErrEntityNotFound).Err)
-		http.Error(w, err.Error(), http.StatusNotFound)
+		JSONError(w, err.Error(), http.StatusNotFound)
 	default:
 		log.Warnf(logFormat, err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		JSONError(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 	return
 }
