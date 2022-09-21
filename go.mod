@@ -15,7 +15,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.9.0 // indirect
 	github.com/mitchellh/mapstructure v1.0.0 // indirect
 	github.com/pelletier/go-toml v1.2.0 // indirect
-	github.com/pkg/errors v0.8.0
+	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.1.1
 	github.com/spf13/afero v1.1.1 // indirect
 	github.com/spf13/cast v1.2.0 // indirect
