@@ -5,7 +5,7 @@ go 1.14
 require (
 	github.com/BurntSushi/toml v0.3.0 // indirect
 	github.com/fsnotify/fsnotify v1.4.7 // indirect
-	github.com/go-chi/chi v3.3.3+incompatible
+	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/go-sql-driver/mysql v1.4.0
 	github.com/golang/mock v1.2.0
 	github.com/hashicorp/hcl v1.0.0 // indirect
